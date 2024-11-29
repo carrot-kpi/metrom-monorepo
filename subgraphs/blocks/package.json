@@ -12,6 +12,7 @@
         "deploy:mantle-sepolia": "pnpm prepare:deploy mantle-sepolia && pnpm codegen && graph build && graph deploy metrom-mantle-sepolia-blocks -l 0.0.1 --node https://subgraph-api.mantle.xyz/deploy --ipfs https://subgraph-api.mantle.xyz/ipfs",
         "deploy:base-sepolia": "pnpm prepare:deploy base-sepolia && pnpm codegen && graph build && graph deploy --studio metrom-base-sepolia-blocks -l 0.0.1",
         "deploy:form-testnet": "pnpm prepare:deploy form-testnet && pnpm codegen && graph build && graph deploy metrom-form-testnet-blocks -l 0.0.1 --node https://formapi.0xgraph.xyz/deploy --ipfs https://formapi.0xgraph.xyz/ipfs",
+        "deploy:arthera-testnet": "pnpm prepare:deploy arthera-testnet && pnpm codegen && graph build",
         "deploy:mantle": "pnpm prepare:deploy mantle && pnpm codegen && graph build && graph deploy metrom-mantle-blocks -l 0.0.1 --node https://subgraph-api.mantle.xyz/deploy --ipfs https://subgraph-api.mantle.xyz/ipfs",
         "deploy:mode": "pnpm prepare:deploy mode-mainnet && pnpm codegen && graph build && graph deploy --studio metrom-mode-blocks -l 0.0.1",
         "deploy:base": "pnpm prepare:deploy base && pnpm codegen && graph build && graph deploy --studio metrom-base-blocks -l 0.0.1",

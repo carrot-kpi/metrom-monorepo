@@ -16,6 +16,7 @@
         "deploy:taiko": "pnpm prepare:deploy taiko && pnpm codegen && graph build && goldsky subgraph deploy metrom-taiko/0.0.2",
         "deploy:scroll": "pnpm prepare:deploy scroll && pnpm codegen && graph deploy metrom-scroll -l 0.0.2",
         "deploy:sonic": "pnpm prepare:deploy sonic && pnpm codegen && 0xgraph deploy metrom-sonic -l 0.0.1",
+        "deploy:arthera": "pnpm prepare:deploy arthera && pnpm codegen",
         "lint": "eslint .",
         "format": "eslint --fix ."
     },

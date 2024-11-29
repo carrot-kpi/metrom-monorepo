@@ -70,6 +70,19 @@ export const DEPLOYMENTS: {
             },
         },
     },
+    "arthera-testnet": {
+        "third-trade": {
+            Factory: {
+                address: "0x13fcE0acbe6Fb11641ab753212550574CaD31415",
+                startBlock: 8843,
+            },
+            NonFungiblePositionManager: {
+                address: "0x83D4a9Ea77a4dbA073cD90b30410Ac9F95F93E7C",
+                startBlock: 8864,
+                version: NonFungiblePositionManagerVersion.V1_0,
+            },
+        },
+    },
     mantle: {
         swapsicle: {
             Factory: {
