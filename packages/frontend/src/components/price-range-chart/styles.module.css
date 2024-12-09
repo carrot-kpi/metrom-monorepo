@@ -1,0 +1,62 @@
+.root {
+    @apply h-full
+        flex
+        flex-col
+        bg-white
+        rounded-2xl;
+}
+
+.emptyContainer {
+    @apply w-full
+        h-full
+        px-3
+        min-h-[368px]
+        flex
+        justify-center
+        items-center
+        bg-white
+        rounded-2xl;
+}
+
+.errorText {
+    @apply flex-col;
+}
+
+.container {
+    @apply h-full min-h-80;
+}
+
+.header {
+    @apply flex items-center justify-between p-2 rounded-md;
+}
+
+.zoomButtons {
+    @apply flex items-center gap-1;
+}
+
+.zoomButton {
+    @apply w-8 h-8 rounded-md;
+}
+
+.divider {
+    @apply w-[1px] h-full bg-gray-500;
+}
+
+.zoomButtons > svg {
+    @apply w-5
+        h-5
+        hover:text-gray-400
+        cursor-pointer
+        transition-colors
+        duration-200
+        ease-in-out;
+}
+
+.text {
+    @apply font-sans
+        uppercase
+        text-xs
+        leading-none
+        font-medium
+        fill-black;
+}

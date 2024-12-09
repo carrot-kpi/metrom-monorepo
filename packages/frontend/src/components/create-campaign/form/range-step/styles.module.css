@@ -1,0 +1,35 @@
+.stepContent {
+    @apply flex flex-col gap-3 p-4;
+}
+
+.previewLabelWrapper {
+    @apply w-full flex justify-between items-center;
+}
+
+.previewTextWrapper {
+    @apply flex items-center gap-2;
+}
+
+.previewLabel {
+    @apply !text-inherit;
+}
+
+.previewDisabled {
+    @apply hover:cursor-default hover:bg-white;
+}
+
+.tvlWrapper {
+    @apply flex gap-1;
+}
+
+.error {
+    @apply transition-opacity duration-200 ease-in-out opacity-0;
+}
+
+.errorVisible {
+    @apply opacity-100;
+}
+
+.applyButton {
+    @apply w-full;
+}

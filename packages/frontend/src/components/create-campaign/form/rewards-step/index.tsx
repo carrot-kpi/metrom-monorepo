@@ -42,7 +42,7 @@ export function RewardsStep({
     onError,
 }: RewardsStepProps) {
     const t = useTranslations("newCampaign.form.rewards");
-    const [type, setType] = useState(rewardType || RewardType.tokens);
+    const [type, setType] = useState(rewardType || RewardType.Tokens);
     const [error, setError] = useState("");
 
     const campaignDuration = useMemo(() => {
@@ -60,12 +60,12 @@ export function RewardsStep({
 
     useEffect(() => {
         if (rewardType) return;
-        onRewardsChange({ rewardType: RewardType.tokens });
+        onRewardsChange({ rewardType: RewardType.Tokens });
     }, [rewardType, onRewardsChange]);
 
     useEffect(() => {
         if (pool) return;
-        setType(RewardType.tokens);
+        setType(RewardType.Tokens);
     }, [pool]);
 
     const handleOnRewardTypeSwitch = useCallback(
@@ -122,10 +122,10 @@ export function RewardsStep({
                             onChange={handleOnRewardTypeSwitch}
                         >
                             <Tab
-                                value={RewardType.tokens}
+                                value={RewardType.Tokens}
                                 className={classNames(styles.tab, {
                                     [styles.activeTab]:
-                                        type === RewardType.tokens,
+                                        type === RewardType.Tokens,
                                 })}
                             >
                                 <Typography weight="medium" size="sm">
@@ -133,10 +133,10 @@ export function RewardsStep({
                                 </Typography>
                             </Tab>
                             <Tab
-                                value={RewardType.points}
+                                value={RewardType.Points}
                                 className={classNames(styles.tab, {
                                     [styles.activeTab]:
-                                        type === RewardType.points,
+                                        type === RewardType.Points,
                                 })}
                             >
                                 <Typography weight="medium" size="sm">
@@ -150,7 +150,7 @@ export function RewardsStep({
                 className={{ root: !disabled ? styles.stepPreview : "" }}
             >
                 <div className={styles.previewWrapper}>
-                    {type === RewardType.points && (
+                    {type === RewardType.Points && (
                         <RewardPoints
                             campaignDuration={campaignDuration}
                             points={points}
@@ -159,7 +159,7 @@ export function RewardsStep({
                             onPointsChange={onRewardsChange}
                         />
                     )}
-                    {type === RewardType.tokens && (
+                    {type === RewardType.Tokens && (
                         <RewardTokens
                             campaignDuration={campaignDuration}
                             tokens={tokens}

@@ -60,9 +60,9 @@ export function CampaignPreview({
     const { writeContractAsync } = useWriteContract();
 
     const tokensToApprove = useMemo(() => {
-        if (payload.rewardType === RewardType.tokens) return payload.tokens;
+        if (payload.rewardType === RewardType.Tokens) return payload.tokens;
 
-        if (payload.rewardType === RewardType.points && payload.feeToken) {
+        if (payload.rewardType === RewardType.Points && payload.feeToken) {
             const { amount, token } = payload.feeToken;
 
             const newRaw = (amount.raw * 115n) / 100n;
@@ -87,7 +87,7 @@ export function CampaignPreview({
         if (!tokensApproved || !pool || !startDate || !endDate) return [[], []];
 
         if (
-            payload.rewardType === RewardType.tokens &&
+            payload.rewardType === RewardType.Tokens &&
             tokens &&
             tokens.length > 0
         )
@@ -107,7 +107,7 @@ export function CampaignPreview({
                 [],
             ];
 
-        if (payload.rewardType === RewardType.points && points && feeToken)
+        if (payload.rewardType === RewardType.Points && points && feeToken)
             return [
                 [],
                 [
@@ -267,7 +267,7 @@ export function CampaignPreview({
                             label={t("tvl")}
                             value={formatUsdAmount(payload.pool?.usdTvl)}
                         />
-                        {payload.rewardType === RewardType.tokens && (
+                        {payload.rewardType === RewardType.Tokens && (
                             <TextField
                                 boxed
                                 size="xl"
@@ -281,7 +281,7 @@ export function CampaignPreview({
                                 }
                             />
                         )}
-                        {payload.rewardType === RewardType.points && (
+                        {payload.rewardType === RewardType.Points && (
                             <TextField
                                 boxed
                                 size="xl"
@@ -292,7 +292,7 @@ export function CampaignPreview({
                             />
                         )}
                     </div>
-                    {payload.rewardType === RewardType.tokens && (
+                    {payload.rewardType === RewardType.Tokens && (
                         <Rewards
                             rewards={payload.tokens}
                             startDate={payload.startDate}

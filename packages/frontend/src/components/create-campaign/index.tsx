@@ -39,9 +39,9 @@ export function CreateCampaign() {
             !payload.pool ||
             !payload.startDate ||
             !payload.endDate ||
-            (payload.rewardType === RewardType.tokens &&
+            (payload.rewardType === RewardType.Tokens &&
                 (!payload.tokens || payload.tokens.length === 0)) ||
-            (payload.rewardType === RewardType.points &&
+            (payload.rewardType === RewardType.Points &&
                 (!payload.feeToken || !payload.points)) ||
             Object.values(payloadErrors).some((error) => !!error)
         );
@@ -93,6 +93,7 @@ export function CreateCampaign() {
             points: undefined,
             feeToken: undefined,
             kpiSpecification: undefined,
+            rangeSpecification: undefined,
         }));
         setPayloadErrors({});
         setView(View.form);

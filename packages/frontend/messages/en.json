@@ -219,6 +219,20 @@
                 },
                 "minimumPayout": "Minimum payout",
                 "apply": "Apply"
+            },
+            "range": {
+                "title": "Set range to reward",
+                "currentPrice": "Current price",
+                "minPrice": "Min price",
+                "maxPrice": "Max price",
+                "apply": "Apply",
+                "errors": {
+                    "missing": "Bound missing",
+                    "malformed": "Wrong bound values"
+                },
+                "warnings": {
+                    "notApplied": "Changes not applied"
+                }
             }
         },
         "submit": {
@@ -444,5 +458,16 @@
     "apr": {
         "upTo": "up to",
         "apr": "APR"
+    },
+    "priceRangeChart": {
+        "title": "Range visualizer",
+        "tooltip": {
+            "price": "price:"
+        },
+        "emptyData": "Missing price range data",
+        "errors": {
+            "wrongData": "Wrong data",
+            "missingData": "Fill both min and max price values"
+        }
     }
 }

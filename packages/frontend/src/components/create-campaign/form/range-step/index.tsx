@@ -1,124 +1,96 @@
 import { Step } from "@/src/components/step";
 import { StepContent } from "@/src/components/step/content";
 import { StepPreview } from "@/src/components/step/preview";
+import { Button, ErrorText, Switch, Typography } from "@metrom-xyz/ui";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useChainId } from "wagmi";
+import { useTranslations } from "next-intl";
+import { RangeInputs } from "./range-inputs";
 import type {
     CampaignPayload,
     CampaignPayloadErrors,
     CampaignPayloadPart,
 } from "@/src/types";
-import { Button, ErrorText, Switch, Typography } from "@metrom-xyz/ui";
-import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { formatUsdAmount } from "@/src/utils/format";
+import { PriceRangeChart } from "@/src/components/price-range-chart";
+import { type RangeSpecification } from "@metrom-xyz/sdk";
 import classNames from "classnames";
-import { KpiMetric, type KpiSpecification } from "@metrom-xyz/sdk";
 import { usePrevious } from "react-use";
-import { KpiSimulationChart } from "../../../kpi-simulation-chart";
-import { GoalInputs } from "./goal-inputs";
-import { useChainId } from "wagmi";
 
 import styles from "./styles.module.css";
 
-interface KpiStepProps {
+interface RangeStepProps {
     disabled?: boolean;
-    pool?: CampaignPayload["pool"];
-    rewards?: CampaignPayload["tokens"];
-    kpiSpecification?: CampaignPayload["kpiSpecification"];
-    onKpiChange: (kpi: CampaignPayloadPart) => void;
+    rangeSpecification?: CampaignPayload["rangeSpecification"];
+    onRangeChange: (range: CampaignPayloadPart) => void;
     onError: (errors: CampaignPayloadErrors) => void;
 }
 
-export function KpiStep({
+export function RangeStep({
     disabled,
-    pool,
-    rewards,
-    kpiSpecification,
-    onKpiChange,
+    rangeSpecification,
+    onRangeChange,
     onError,
-}: KpiStepProps) {
-    const t = useTranslations("newCampaign.form.kpi");
+}: RangeStepProps) {
+    const t = useTranslations("newCampaign.form.range");
     const [open, setOpen] = useState(false);
     const [enabled, setEnabled] = useState(false);
     const [error, setError] = useState("");
     const [warning, setWarning] = useState("");
+    const [activeTokenIndex, setActiveTokenIndex] = useState<number>(0);
 
-    const [minimumPayoutPercentage, setMinimumPayoutPercentage] =
-        useState<number>(kpiSpecification?.minimumPayoutPercentage || 0);
     const [lowerUsdTargetRaw, setLowerUsdTargetRaw] = useState<
         number | undefined
-    >(kpiSpecification?.goal.lowerUsdTarget);
+    >(rangeSpecification?.lowerUsdTarget);
     const [upperUsdTargetRaw, setUpperUsdTargetRaw] = useState<
         number | undefined
-    >(kpiSpecification?.goal.upperUsdTarget);
+    >(rangeSpecification?.upperUsdTarget);
 
-    const prevKpiSpecification = usePrevious(kpiSpecification);
+    const prevRangeSpecification = usePrevious(rangeSpecification);
     const chainId = useChainId();
 
-    const totalRewardsUsdAmount = useMemo(() => {
-        if (!rewards) return 0;
-        let total = 0;
-        for (const reward of rewards) {
-            if (!reward.amount.usdValue) return 0;
-            total += reward.amount.usdValue;
-        }
-        return total;
-    }, [rewards]);
-
     const unsavedChanges = useMemo(() => {
-        if (!prevKpiSpecification) return true;
+        if (!prevRangeSpecification) return true;
 
+        // FIXME: we should have tick values in the spec, no?
         const {
-            minimumPayoutPercentage: prevMinPayout = 0,
-            goal: {
-                lowerUsdTarget: prevLowerTarget,
-                upperUsdTarget: prevUpperTarget,
-            },
-        } = prevKpiSpecification;
+            lowerUsdTarget: prevLowerTarget,
+            upperUsdTarget: prevUpperTarget,
+        } = prevRangeSpecification;
 
         return (
-            prevMinPayout !== minimumPayoutPercentage ||
             prevLowerTarget !== lowerUsdTargetRaw ||
             prevUpperTarget !== upperUsdTargetRaw
         );
-    }, [
-        lowerUsdTargetRaw,
-        minimumPayoutPercentage,
-        prevKpiSpecification,
-        upperUsdTargetRaw,
-    ]);
+    }, [lowerUsdTargetRaw, prevRangeSpecification, upperUsdTargetRaw]);
 
-    const newKpiSpecification: KpiSpecification | undefined =
+    const newRangeSpecification: RangeSpecification | undefined =
         lowerUsdTargetRaw !== undefined && upperUsdTargetRaw !== undefined
             ? {
-                  goal: {
-                      metric: KpiMetric.RangePoolTvl,
-                      lowerUsdTarget: lowerUsdTargetRaw,
-                      upperUsdTarget: upperUsdTargetRaw,
-                  },
-                  minimumPayoutPercentage,
+                  lowerUsdTarget: lowerUsdTargetRaw,
+                  upperUsdTarget: upperUsdTargetRaw,
               }
             : undefined;
 
     useEffect(() => {
-        setEnabled(false);
+        setOpen(false);
     }, [chainId]);
 
     // this hooks is used to disable and close the step when
-    // the kpi specification gets disabled, after the campaign creation
+    // the range specification gets disabled, after the campaign creation
     useEffect(() => {
-        if (enabled && !!prevKpiSpecification && !kpiSpecification)
+        if (enabled && !!prevRangeSpecification && !rangeSpecification)
             setEnabled(false);
-    }, [enabled, kpiSpecification, prevKpiSpecification]);
+    }, [enabled, prevRangeSpecification, rangeSpecification]);
 
     useEffect(() => {
         if (enabled) return;
-        if (kpiSpecification) onKpiChange({ kpiSpecification: undefined });
+        if (rangeSpecification)
+            onRangeChange({ rangeSpecification: undefined });
 
-        setMinimumPayoutPercentage(0);
         setLowerUsdTargetRaw(undefined);
         setUpperUsdTargetRaw(undefined);
         setError("");
-    }, [enabled, kpiSpecification, onKpiChange]);
+    }, [enabled, onRangeChange, rangeSpecification]);
 
     useEffect(() => {
         if (
@@ -140,11 +112,16 @@ export function KpiStep({
         if (
             lowerUsdTargetRaw !== undefined &&
             upperUsdTargetRaw !== undefined &&
-            lowerUsdTargetRaw >= upperUsdTargetRaw
+            (lowerUsdTargetRaw >= upperUsdTargetRaw ||
+                lowerUsdTargetRaw === upperUsdTargetRaw)
         )
             setError("errors.malformed");
         else setError("");
     }, [lowerUsdTargetRaw, upperUsdTargetRaw]);
+
+    useEffect(() => {
+        setOpen(enabled);
+    }, [enabled]);
 
     useEffect(() => {
         if (enabled && !open && unsavedChanges)
@@ -154,13 +131,9 @@ export function KpiStep({
 
     useEffect(() => {
         onError({
-            kpiSpecification: !!error || (enabled && !kpiSpecification),
+            rangeSpecification: !!error || (enabled && !rangeSpecification),
         });
-    }, [error, enabled, kpiSpecification, onError]);
-
-    useEffect(() => {
-        setOpen(enabled);
-    }, [enabled]);
+    }, [error, enabled, rangeSpecification, onError]);
 
     function handleSwitchOnClick() {
         setEnabled((enabled) => !enabled);
@@ -171,29 +144,27 @@ export function KpiStep({
         setOpen((open) => !open);
     }
 
+    function handleTokenPriceOnFlip() {
+        if (activeTokenIndex === 0) setActiveTokenIndex(1);
+        if (activeTokenIndex === 1) setActiveTokenIndex(0);
+
+        setLowerUsdTargetRaw(undefined);
+        setUpperUsdTargetRaw(undefined);
+        onRangeChange({ rangeSpecification: undefined });
+    }
+
     const handleOnApply = useCallback(() => {
         if (lowerUsdTargetRaw === undefined || upperUsdTargetRaw === undefined)
             return;
 
-        const kpiSpecification: KpiSpecification = {
-            goal: {
-                metric: KpiMetric.RangePoolTvl,
-                lowerUsdTarget: lowerUsdTargetRaw,
-                upperUsdTarget: upperUsdTargetRaw,
-            },
+        const rangeSpecification: RangeSpecification = {
+            lowerUsdTarget: lowerUsdTargetRaw,
+            upperUsdTarget: upperUsdTargetRaw,
         };
 
-        if (minimumPayoutPercentage)
-            kpiSpecification.minimumPayoutPercentage = minimumPayoutPercentage;
-
         setOpen(false);
-        onKpiChange({ kpiSpecification });
-    }, [
-        lowerUsdTargetRaw,
-        minimumPayoutPercentage,
-        onKpiChange,
-        upperUsdTargetRaw,
-    ]);
+        onRangeChange({ rangeSpecification });
+    }, [lowerUsdTargetRaw, onRangeChange, upperUsdTargetRaw]);
 
     return (
         <Step
@@ -203,7 +174,6 @@ export function KpiStep({
             completed={enabled}
             open={open}
             onPreviewClick={handleStepOnClick}
-            className={styles.step}
         >
             <StepPreview
                 label={
@@ -241,53 +211,38 @@ export function KpiStep({
                 }
                 decorator={false}
                 className={{
-                    root: !enabled ? styles.previewDisabled : "",
+                    root: classNames({
+                        [styles.previewDisabled]: !enabled,
+                    }),
                 }}
             >
                 <div className={styles.tvlWrapper}>
                     <Typography uppercase weight="medium" light size="sm">
-                        {t("currentTvl")}
+                        {t("currentPrice")}
                     </Typography>
                     <Typography weight="medium" size="sm">
-                        {formatUsdAmount(pool?.usdTvl)}
+                        price
                     </Typography>
                 </div>
             </StepPreview>
             <StepContent>
                 <div className={styles.stepContent}>
-                    <GoalInputs
-                        kpiSpecification={newKpiSpecification}
+                    <RangeInputs
+                        // TODO: use real tick spacing
                         error={!!error}
+                        tickPriceSpacing={15}
+                        rangeSpecification={newRangeSpecification}
+                        onTokenPriceFlip={handleTokenPriceOnFlip}
                         onLowerUsdTargetChange={setLowerUsdTargetRaw}
                         onUpperUsdTargetChange={setUpperUsdTargetRaw}
-                        onMinimumPayoutPercentageChange={
-                            setMinimumPayoutPercentage
-                        }
                     />
-                    <div className={styles.chartWrapper}>
-                        <div className={styles.simulationTitleWrapper}>
-                            <Typography
-                                uppercase
-                                weight="medium"
-                                light
-                                size="xs"
-                            >
-                                {t("simulation.title")}
-                            </Typography>
-                            <Typography weight="medium" light size="xs">
-                                {t("simulation.description")}
-                            </Typography>
-                        </div>
-                        <KpiSimulationChart
-                            tooltipSize="xs"
-                            lowerUsdTarget={lowerUsdTargetRaw}
-                            upperUsdTarget={upperUsdTargetRaw}
-                            totalRewardsUsd={totalRewardsUsdAmount}
-                            minimumPayoutPercentage={minimumPayoutPercentage}
-                            poolUsdTvl={pool?.usdTvl}
-                            error={!!error}
-                        />
-                    </div>
+                    <PriceRangeChart
+                        error={!!error}
+                        poolTick={40}
+                        activeTokenIndex={activeTokenIndex}
+                        lowerUsdPrice={lowerUsdTargetRaw}
+                        upperUsdPrice={upperUsdTargetRaw}
+                    />
                     <Button
                         variant="secondary"
                         size="sm"

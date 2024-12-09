@@ -74,10 +74,17 @@ export interface KpiSpecification {
     goal: RangePoolTvlKpiGoal;
 }
 
+// TODO: define type
+export interface RangeSpecification {
+    lowerUsdTarget: number;
+    upperUsdTarget: number;
+}
+
 export interface Specification {
     whitelist?: Address[];
     blacklist?: Address[];
     kpi?: KpiSpecification;
+    range?: RangeSpecification;
 }
 
 export interface KpiSpecificationWithMeasurement extends KpiSpecification {

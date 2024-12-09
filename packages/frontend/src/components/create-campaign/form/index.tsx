@@ -14,6 +14,7 @@ import { RewardsStep } from "./rewards-step";
 import { RestrictionsStep } from "./restrictions-step";
 import { KpiStep } from "./kpi-step";
 import { KPI } from "@/src/commons/env";
+import { RangeStep } from "./range-step";
 
 import styles from "./styles.module.css";
 
@@ -83,7 +84,7 @@ export function CreateCampaignForm({
                 <KpiStep
                     disabled={
                         !payload?.tokens ||
-                        payload.rewardType === RewardType.points ||
+                        payload.rewardType === RewardType.Points ||
                         unsupportedChain
                     }
                     pool={payload?.pool}
@@ -93,6 +94,12 @@ export function CreateCampaignForm({
                     onError={onPayloadError}
                 />
             )}
+            <RangeStep
+                disabled={false}
+                rangeSpecification={payload?.rangeSpecification}
+                onRangeChange={onPayloadChange}
+                onError={onPayloadError}
+            />
             <RestrictionsStep
                 disabled={!payload?.tokens || unsupportedChain}
                 restrictions={payload?.restrictions}

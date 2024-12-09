@@ -2,6 +2,9 @@ import { forwardRef, useId } from "react";
 import type { ReactElement } from "react";
 import { type NumericFormatProps, NumericFormat } from "react-number-format";
 import { type BaseInputProps, BaseInputWrapper } from "./commons/input";
+import classNames from "classnames";
+
+import styles from "./commons/styles.module.css";
 
 export { type NumberFormatValues } from "react-number-format";
 
@@ -50,6 +53,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
                 className={className}
             >
                 <NumericFormat
+                    id={resolvedId}
                     type="text"
                     defaultValue=""
                     thousandSeparator=" "
@@ -58,8 +62,8 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
                     disabled={disabled || loading}
                     placeholder={placeholder}
                     getInputRef={ref}
-                    id={resolvedId}
                     {...rest}
+                    className={classNames("input", styles.input)}
                 />
             </BaseInputWrapper>
         );
