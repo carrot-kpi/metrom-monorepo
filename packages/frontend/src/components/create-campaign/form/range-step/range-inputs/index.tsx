@@ -1,4 +1,4 @@
-import { StepNumberInput, type NumberFormatValues } from "@metrom-xyz/ui";
+import { NumberInput, type NumberFormatValues } from "@metrom-xyz/ui";
 import { useTranslations } from "next-intl";
 
 import styles from "./styles.module.css";
@@ -50,7 +50,7 @@ export function RangeInputs({
     // TODO: handle pools with more than 2 tokens (such as stableswap3 pools)
     return (
         <div className={styles.root}>
-            <StepNumberInput
+            <NumberInput
                 label={t("minPrice", {
                     token0: pool?.tokens[0].symbol,
                     token1: pool?.tokens[1].symbol,
@@ -62,7 +62,7 @@ export function RangeInputs({
                 onValueChange={handleFromOnChange}
                 onBlur={handleFromBlur}
             />
-            <StepNumberInput
+            <NumberInput
                 label={t("maxPrice", {
                     token0: pool?.tokens[0].symbol,
                     token1: pool?.tokens[1].symbol,

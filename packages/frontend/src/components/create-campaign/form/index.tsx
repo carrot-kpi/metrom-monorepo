@@ -14,6 +14,7 @@ import { RewardsStep } from "./rewards-step";
 import { RestrictionsStep } from "./restrictions-step";
 import { KpiStep } from "./kpi-step";
 import { RangeStep } from "./range-step";
+import { AMM_SUPPORTS_RANGE_INCENTIVES } from "@/src/commons";
 
 import styles from "./styles.module.css";
 
@@ -91,13 +92,16 @@ export function CreateCampaignForm({
                 onKpiChange={onPayloadChange}
                 onError={onPayloadError}
             />
-            <RangeStep
-                disabled={!payload?.tokens || unsupportedChain}
-                pool={payload?.pool}
-                rangeSpecification={payload?.rangeSpecification}
-                onRangeChange={onPayloadChange}
-                onError={onPayloadError}
-            />
+            {payload?.pool &&
+                AMM_SUPPORTS_RANGE_INCENTIVES[payload.pool.amm] && (
+                    <RangeStep
+                        disabled={!payload?.tokens || unsupportedChain}
+                        pool={payload.pool}
+                        rangeSpecification={payload?.rangeSpecification}
+                        onRangeChange={onPayloadChange}
+                        onError={onPayloadError}
+                    />
+                )}
             <RestrictionsStep
                 disabled={!payload?.tokens || unsupportedChain}
                 restrictions={payload?.restrictions}
