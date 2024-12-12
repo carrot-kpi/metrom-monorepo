@@ -1,22 +1,17 @@
-import type { CampaignPayload } from "@/src/types";
-import {
-    Button,
-    StepNumberInput,
-    type NumberFormatValues,
-} from "@metrom-xyz/ui";
-import { useState } from "react";
+import { StepNumberInput, type NumberFormatValues } from "@metrom-xyz/ui";
 import { useTranslations } from "next-intl";
-import { useDebounce } from "react-use";
 
 import styles from "./styles.module.css";
+import { priceToTick, tickToPrice } from "@/src/utils/price-range";
+import type { PoolWithTvl } from "@metrom-xyz/sdk";
 
 interface RangeInputsProps {
-    tickPriceSpacing: number;
+    pool?: PoolWithTvl;
     error?: boolean;
-    rangeSpecification?: CampaignPayload["rangeSpecification"];
-    onTokenPriceFlip: () => void;
-    onLowerUsdTargetChange: (value: number | undefined) => void;
-    onUpperUsdTargetChange: (value: number | undefined) => void;
+    from?: number;
+    onFromChange: (value: number | undefined) => void;
+    to?: number;
+    onToChange: (value: number | undefined) => void;
 }
 
 export interface NumberInputValues {
@@ -25,104 +20,59 @@ export interface NumberInputValues {
 }
 
 export function RangeInputs({
-    tickPriceSpacing,
+    pool,
     error,
-    rangeSpecification,
-    onTokenPriceFlip,
-    onLowerUsdTargetChange,
-    onUpperUsdTargetChange,
+    from,
+    to,
+    onFromChange,
+    onToChange,
 }: RangeInputsProps) {
     const t = useTranslations("newCampaign.form.range");
 
-    const [lowerUsdTargetRaw, setLowerUsdTargetRaw] = useState<
-        NumberInputValues | undefined
-    >(() => {
-        if (rangeSpecification) {
-            return {
-                raw: rangeSpecification.lowerUsdTarget,
-                formatted: rangeSpecification.lowerUsdTarget.toString(),
-            };
-        }
-        return undefined;
-    });
-    const [upperUsdTargetRaw, setUpperUsdTargetRaw] = useState<
-        NumberInputValues | undefined
-    >(() => {
-        if (rangeSpecification) {
-            return {
-                raw: rangeSpecification.upperUsdTarget,
-                formatted: rangeSpecification.upperUsdTarget.toString(),
-            };
-        }
-        return undefined;
-    });
-
-    useDebounce(
-        () => {
-            onLowerUsdTargetChange(lowerUsdTargetRaw?.raw);
-        },
-        200,
-        [lowerUsdTargetRaw],
-    );
-
-    useDebounce(
-        () => {
-            onUpperUsdTargetChange(upperUsdTargetRaw?.raw);
-        },
-        200,
-        [upperUsdTargetRaw],
-    );
-
-    function handleLowerUsdTargetOnChange(value: NumberFormatValues) {
-        setLowerUsdTargetRaw({
-            raw: value.floatValue,
-            formatted: value.formattedValue,
-        });
+    function handleFromOnChange(value: NumberFormatValues) {
+        onFromChange(value.floatValue);
     }
 
-    function handleUpperUsdTargetOnChange(value: NumberFormatValues) {
-        setUpperUsdTargetRaw({
-            raw: value.floatValue,
-            formatted: value.formattedValue,
-        });
+    function handleFromBlur() {
+        if (from === undefined) return;
+        onFromChange(tickToPrice(priceToTick(from)));
     }
 
-    function handleTokenPriceOnFlip() {
-        onTokenPriceFlip();
-        setUpperUsdTargetRaw({ raw: undefined, formatted: "" });
-        setLowerUsdTargetRaw({ raw: undefined, formatted: "" });
+    function handleToOnChange(value: NumberFormatValues) {
+        onToChange(value.floatValue);
     }
 
+    function handleToBlur() {
+        if (to === undefined) return;
+        onToChange(tickToPrice(priceToTick(to)));
+    }
+
+    // TODO: handle pools with more than 2 tokens (such as stableswap3 pools)
     return (
         <div className={styles.root}>
-            <Button
-                variant="secondary"
-                size="xs"
-                onClick={handleTokenPriceOnFlip}
-            >
-                invert
-            </Button>
             <StepNumberInput
-                label={t("minPrice")}
-                placeholder="$0"
-                prefix="$"
-                step={tickPriceSpacing}
-                forceStep
+                label={t("minPrice", {
+                    token0: pool?.tokens[0].symbol,
+                    token1: pool?.tokens[1].symbol,
+                })}
+                placeholder="0.0"
                 error={!!error}
                 allowNegative={false}
-                value={lowerUsdTargetRaw?.formatted}
-                onValueChange={handleLowerUsdTargetOnChange}
+                value={from?.toString()}
+                onValueChange={handleFromOnChange}
+                onBlur={handleFromBlur}
             />
             <StepNumberInput
-                label={t("maxPrice")}
-                placeholder="$0"
-                prefix="$"
-                step={tickPriceSpacing}
-                forceStep
+                label={t("maxPrice", {
+                    token0: pool?.tokens[0].symbol,
+                    token1: pool?.tokens[1].symbol,
+                })}
+                placeholder="0.0"
                 error={!!error}
                 allowNegative={false}
-                value={upperUsdTargetRaw?.formatted}
-                onValueChange={handleUpperUsdTargetOnChange}
+                value={to?.toString()}
+                onValueChange={handleToOnChange}
+                onBlur={handleToBlur}
             />
         </div>
     );

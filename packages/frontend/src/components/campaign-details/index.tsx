@@ -10,7 +10,6 @@ import { Details } from "./details";
 import { Rewards } from "./rewards";
 import { Points } from "./points";
 import { Leaderboard } from "./leaderboard";
-import { KPI } from "@/src/commons/env";
 import { Kpi } from "./kpi";
 import { PageNotFound } from "../page-not-found";
 
@@ -50,7 +49,7 @@ export function CampaignDetails({ chain, campaignId }: CampaignDetailsProps) {
                 {campaign && campaign.points && (
                     <Points campaign={campaign} loading={loadingCampaign} />
                 )}
-                {KPI && <Kpi campaign={campaign} loading={loadingCampaign} />}
+                <Kpi campaign={campaign} loading={loadingCampaign} />
                 <Leaderboard campaign={campaign} loading={loadingCampaign} />
             </div>
         </div>

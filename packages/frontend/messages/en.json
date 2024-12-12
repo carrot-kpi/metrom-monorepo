@@ -223,8 +223,8 @@
             "range": {
                 "title": "Set range to reward",
                 "currentPrice": "Current price",
-                "minPrice": "Min price",
-                "maxPrice": "Max price",
+                "minPrice": "Min price ({token0} per {token1})",
+                "maxPrice": "Max price ({token0} per {token1})",
                 "apply": "Apply",
                 "errors": {
                     "missing": "Bound missing",

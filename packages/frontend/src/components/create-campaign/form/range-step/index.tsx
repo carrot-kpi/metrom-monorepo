@@ -11,8 +11,8 @@ import type {
     CampaignPayloadErrors,
     CampaignPayloadPart,
 } from "@/src/types";
-import { PriceRangeChart } from "@/src/components/price-range-chart";
-import { type RangeSpecification } from "@metrom-xyz/sdk";
+// import { PriceRangeChart } from "@/src/components/price-range-chart";
+import { type PoolWithTvl, type RangeSpecification } from "@metrom-xyz/sdk";
 import classNames from "classnames";
 import { usePrevious } from "react-use";
 
@@ -20,6 +20,7 @@ import styles from "./styles.module.css";
 
 interface RangeStepProps {
     disabled?: boolean;
+    pool?: PoolWithTvl;
     rangeSpecification?: CampaignPayload["rangeSpecification"];
     onRangeChange: (range: CampaignPayloadPart) => void;
     onError: (errors: CampaignPayloadErrors) => void;
@@ -27,6 +28,7 @@ interface RangeStepProps {
 
 export function RangeStep({
     disabled,
+    pool,
     rangeSpecification,
     onRangeChange,
     onError,
@@ -36,40 +38,22 @@ export function RangeStep({
     const [enabled, setEnabled] = useState(false);
     const [error, setError] = useState("");
     const [warning, setWarning] = useState("");
-    const [activeTokenIndex, setActiveTokenIndex] = useState<number>(0);
 
-    const [lowerUsdTargetRaw, setLowerUsdTargetRaw] = useState<
-        number | undefined
-    >(rangeSpecification?.lowerUsdTarget);
-    const [upperUsdTargetRaw, setUpperUsdTargetRaw] = useState<
-        number | undefined
-    >(rangeSpecification?.upperUsdTarget);
+    const [from, setFrom] = useState<number | undefined>(
+        rangeSpecification?.from,
+    );
+    const [to, setTo] = useState<number | undefined>(rangeSpecification?.to);
 
     const prevRangeSpecification = usePrevious(rangeSpecification);
     const chainId = useChainId();
 
     const unsavedChanges = useMemo(() => {
-        if (!prevRangeSpecification) return true;
-
-        // FIXME: we should have tick values in the spec, no?
-        const {
-            lowerUsdTarget: prevLowerTarget,
-            upperUsdTarget: prevUpperTarget,
-        } = prevRangeSpecification;
-
         return (
-            prevLowerTarget !== lowerUsdTargetRaw ||
-            prevUpperTarget !== upperUsdTargetRaw
+            !prevRangeSpecification ||
+            prevRangeSpecification.from !== from ||
+            prevRangeSpecification.to !== to
         );
-    }, [lowerUsdTargetRaw, prevRangeSpecification, upperUsdTargetRaw]);
-
-    const newRangeSpecification: RangeSpecification | undefined =
-        lowerUsdTargetRaw !== undefined && upperUsdTargetRaw !== undefined
-            ? {
-                  lowerUsdTarget: lowerUsdTargetRaw,
-                  upperUsdTarget: upperUsdTargetRaw,
-              }
-            : undefined;
+    }, [from, prevRangeSpecification, to]);
 
     useEffect(() => {
         setOpen(false);
@@ -82,42 +66,25 @@ export function RangeStep({
             setEnabled(false);
     }, [enabled, prevRangeSpecification, rangeSpecification]);
 
+    // reset state once the step gets disabled
     useEffect(() => {
         if (enabled) return;
         if (rangeSpecification)
             onRangeChange({ rangeSpecification: undefined });
 
-        setLowerUsdTargetRaw(undefined);
-        setUpperUsdTargetRaw(undefined);
+        setFrom(undefined);
+        setTo(undefined);
         setError("");
     }, [enabled, onRangeChange, rangeSpecification]);
 
     useEffect(() => {
-        if (
-            lowerUsdTargetRaw === undefined &&
-            upperUsdTargetRaw === undefined
-        ) {
-            setError("");
-            return;
-        }
-
-        if (
-            (lowerUsdTargetRaw === undefined && upperUsdTargetRaw) ||
-            (upperUsdTargetRaw === undefined && lowerUsdTargetRaw)
-        ) {
+        if (from === undefined && to === undefined) setError("");
+        else if ((from === undefined && to) || (to === undefined && from))
             setError("errors.missing");
-            return;
-        }
-
-        if (
-            lowerUsdTargetRaw !== undefined &&
-            upperUsdTargetRaw !== undefined &&
-            (lowerUsdTargetRaw >= upperUsdTargetRaw ||
-                lowerUsdTargetRaw === upperUsdTargetRaw)
-        )
+        else if (from !== undefined && to !== undefined && from >= to)
             setError("errors.malformed");
         else setError("");
-    }, [lowerUsdTargetRaw, upperUsdTargetRaw]);
+    }, [from, to]);
 
     useEffect(() => {
         setOpen(enabled);
@@ -144,27 +111,17 @@ export function RangeStep({
         setOpen((open) => !open);
     }
 
-    function handleTokenPriceOnFlip() {
-        if (activeTokenIndex === 0) setActiveTokenIndex(1);
-        if (activeTokenIndex === 1) setActiveTokenIndex(0);
-
-        setLowerUsdTargetRaw(undefined);
-        setUpperUsdTargetRaw(undefined);
-        onRangeChange({ rangeSpecification: undefined });
-    }
-
-    const handleOnApply = useCallback(() => {
-        if (lowerUsdTargetRaw === undefined || upperUsdTargetRaw === undefined)
-            return;
+    const handleApply = useCallback(() => {
+        if (from === undefined || to === undefined) return;
 
         const rangeSpecification: RangeSpecification = {
-            lowerUsdTarget: lowerUsdTargetRaw,
-            upperUsdTarget: upperUsdTargetRaw,
+            from,
+            to,
         };
 
         setOpen(false);
         onRangeChange({ rangeSpecification });
-    }, [lowerUsdTargetRaw, onRangeChange, upperUsdTargetRaw]);
+    }, [from, onRangeChange, to]);
 
     return (
         <Step
@@ -228,31 +185,30 @@ export function RangeStep({
             <StepContent>
                 <div className={styles.stepContent}>
                     <RangeInputs
-                        // TODO: use real tick spacing
+                        pool={pool}
                         error={!!error}
-                        tickPriceSpacing={15}
-                        rangeSpecification={newRangeSpecification}
-                        onTokenPriceFlip={handleTokenPriceOnFlip}
-                        onLowerUsdTargetChange={setLowerUsdTargetRaw}
-                        onUpperUsdTargetChange={setUpperUsdTargetRaw}
+                        from={from}
+                        onFromChange={setFrom}
+                        to={to}
+                        onToChange={setTo}
                     />
-                    <PriceRangeChart
+                    {/*<PriceRangeChart
                         error={!!error}
                         poolTick={40}
                         activeTokenIndex={activeTokenIndex}
-                        lowerUsdPrice={lowerUsdTargetRaw}
-                        upperUsdPrice={upperUsdTargetRaw}
-                    />
+                        lowerUsdPrice={from}
+                        upperUsdPrice={to}
+                    />*/}
                     <Button
                         variant="secondary"
                         size="sm"
                         disabled={
                             !unsavedChanges ||
-                            upperUsdTargetRaw === undefined ||
-                            lowerUsdTargetRaw === undefined ||
+                            to === undefined ||
+                            from === undefined ||
                             !!error
                         }
-                        onClick={handleOnApply}
+                        onClick={handleApply}
                         className={{ root: styles.applyButton }}
                     >
                         {t("apply")}

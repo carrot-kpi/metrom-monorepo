@@ -13,7 +13,6 @@ import { EndDateStep } from "./end-date-step";
 import { RewardsStep } from "./rewards-step";
 import { RestrictionsStep } from "./restrictions-step";
 import { KpiStep } from "./kpi-step";
-import { KPI } from "@/src/commons/env";
 import { RangeStep } from "./range-step";
 
 import styles from "./styles.module.css";
@@ -80,22 +79,21 @@ export function CreateCampaignForm({
                 onRewardsChange={onPayloadChange}
                 onError={onPayloadError}
             />
-            {KPI && (
-                <KpiStep
-                    disabled={
-                        !payload?.tokens ||
-                        payload.rewardType === RewardType.Points ||
-                        unsupportedChain
-                    }
-                    pool={payload?.pool}
-                    rewards={payload?.tokens}
-                    kpiSpecification={payload?.kpiSpecification}
-                    onKpiChange={onPayloadChange}
-                    onError={onPayloadError}
-                />
-            )}
+            <KpiStep
+                disabled={
+                    !payload?.tokens ||
+                    payload.rewardType === RewardType.Points ||
+                    unsupportedChain
+                }
+                pool={payload?.pool}
+                rewards={payload?.tokens}
+                kpiSpecification={payload?.kpiSpecification}
+                onKpiChange={onPayloadChange}
+                onError={onPayloadError}
+            />
             <RangeStep
-                disabled={false}
+                disabled={!payload?.tokens || unsupportedChain}
+                pool={payload?.pool}
                 rangeSpecification={payload?.rangeSpecification}
                 onRangeChange={onPayloadChange}
                 onError={onPayloadError}
