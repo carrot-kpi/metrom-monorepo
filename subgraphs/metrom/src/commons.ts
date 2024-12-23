@@ -13,9 +13,9 @@ import {
     WhitelistedFeeToken,
 } from "../generated/schema";
 import { METROM_ADDRESS } from "./addresses";
-import { Erc20 } from "../generated/Metrom/Erc20";
-import { Erc20BytesName } from "../generated/Metrom/Erc20BytesName";
-import { Erc20BytesSymbol } from "../generated/Metrom/Erc20BytesSymbol";
+import { Erc20 } from "../generated/MetromV1/Erc20";
+import { Erc20BytesName } from "../generated/MetromV1/Erc20BytesName";
+import { Erc20BytesSymbol } from "../generated/MetromV1/Erc20BytesSymbol";
 
 export const BI_MINUS_1 = BigInt.fromI32(-1);
 export const BI_0 = BigInt.zero();

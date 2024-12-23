@@ -18,7 +18,7 @@ const NETWORK_NAME: Record<SupportedChain, string> = {
     [SupportedChain.Taiko]: "taiko",
     [SupportedChain.Scroll]: "scroll",
     [SupportedChain.Sonic]: "sonic",
-    [SupportedChain.Arthera]: "", // no hosting provider here...
+    [SupportedChain.Arthera]: "arthera",
 };
 
 const [, , rawNetwork = ""] = process.argv;
