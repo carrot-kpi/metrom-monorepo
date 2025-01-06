@@ -3,7 +3,7 @@ import { ToastNotification, Typography } from "@metrom-xyz/ui";
 import { ClaimReward } from "@/src/assets/claim-reward";
 import { RemoteLogo } from "@/src/components/remote-logo";
 import type { Erc20Token } from "@metrom-xyz/sdk";
-import { formatTokenAmount } from "@/src/utils/format";
+import { formatAmount } from "@/src/utils/format";
 import type { SupportedChain } from "@metrom-xyz/contracts";
 
 import styles from "./styles.module.css";
@@ -42,7 +42,7 @@ export function RecoverSuccess({
                         {token.symbol}
                     </Typography>
                     <Typography size="lg" weight="medium">
-                        {formatTokenAmount({ amount })}
+                        {formatAmount({ amount })}
                     </Typography>
                 </div>
             )}

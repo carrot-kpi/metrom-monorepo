@@ -13,7 +13,7 @@ import { useCallback, useState } from "react";
 import type { TokenClaims } from "..";
 import { toast } from "sonner";
 import { useChainData } from "@/src/hooks/useChainData";
-import { formatTokenAmount } from "@/src/utils/format";
+import { formatAmount } from "@/src/utils/format";
 import { trackFathomEvent } from "@/src/utils/fathom";
 import { RemoteLogo } from "@/src/components/remote-logo";
 import { ClaimSuccess } from "../../notification/claim-success";
@@ -140,7 +140,7 @@ export function TokenClaim({
                     {tokenClaims.token.symbol}
                 </Typography>
                 <Typography size="lg" weight="medium">
-                    {formatTokenAmount({ amount: tokenClaims.totalAmount })}
+                    {formatAmount({ amount: tokenClaims.totalAmount })}
                 </Typography>
             </div>
             <Button

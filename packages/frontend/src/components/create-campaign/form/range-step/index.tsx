@@ -1,20 +1,29 @@
 import { Step } from "@/src/components/step";
 import { StepContent } from "@/src/components/step/content";
 import { StepPreview } from "@/src/components/step/preview";
-import { Button, ErrorText, Switch, Typography } from "@metrom-xyz/ui";
+import {
+    Button,
+    ErrorText,
+    Skeleton,
+    Switch,
+    Typography,
+} from "@metrom-xyz/ui";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useChainId } from "wagmi";
 import { useTranslations } from "next-intl";
-import { RangeInputs } from "./range-inputs";
+import { RangeInputs, type RangeBound } from "./range-inputs";
 import type {
     CampaignPayload,
     CampaignPayloadErrors,
     CampaignPayloadPart,
+    EnrichedRangeSpecification,
 } from "@/src/types";
-import { PriceRangeChart } from "@/src/components/price-range-chart";
-import { type PoolWithTvl, type RangeSpecification } from "@metrom-xyz/sdk";
+import { LiquidityDensityChart } from "@/src/components/liquidity-density-chart";
+import { getPrice, type PoolWithTvl } from "@metrom-xyz/sdk";
 import classNames from "classnames";
 import { usePrevious } from "react-use";
+import { useLiquidityDensity } from "@/src/hooks/useLiquidityDensity";
+import { formatAmount } from "@/src/utils/format";
 
 import styles from "./styles.module.css";
 
@@ -39,13 +48,17 @@ export function RangeStep({
     const [error, setError] = useState("");
     const [warning, setWarning] = useState("");
 
-    const [from, setFrom] = useState<number | undefined>(
+    const [from, setFrom] = useState<RangeBound | undefined>(
         rangeSpecification?.from,
     );
-    const [to, setTo] = useState<number | undefined>(rangeSpecification?.to);
+    const [to, setTo] = useState<RangeBound | undefined>(
+        rangeSpecification?.to,
+    );
 
     const prevRangeSpecification = usePrevious(rangeSpecification);
     const chainId = useChainId();
+    const { liquidityDensity, loading: loadingLiquidityDensity } =
+        useLiquidityDensity(pool, enabled);
 
     const unsavedChanges = useMemo(() => {
         return (
@@ -78,10 +91,9 @@ export function RangeStep({
     }, [enabled, onRangeChange, rangeSpecification]);
 
     useEffect(() => {
-        if (from === undefined && to === undefined) setError("");
-        else if ((from === undefined && to) || (to === undefined && from))
-            setError("errors.missing");
-        else if (from !== undefined && to !== undefined && from >= to)
+        if (!from && !to) setError("");
+        else if ((!from && to) || (!to && from)) setError("errors.missing");
+        else if (!!from && !!to && from.price >= to.price)
             setError("errors.malformed");
         else setError("");
     }, [from, to]);
@@ -114,14 +126,14 @@ export function RangeStep({
     const handleApply = useCallback(() => {
         if (from === undefined || to === undefined) return;
 
-        const rangeSpecification: RangeSpecification = {
+        const rangeSpecification: EnrichedRangeSpecification = {
             from,
             to,
         };
 
         setOpen(false);
         onRangeChange({ rangeSpecification });
-    }, [from, onRangeChange, to]);
+    }, [from, to, onRangeChange]);
 
     return (
         <Step
@@ -173,13 +185,26 @@ export function RangeStep({
                     }),
                 }}
             >
-                <div className={styles.tvlWrapper}>
+                <div className={styles.priceWrapper}>
                     <Typography uppercase weight="medium" light size="sm">
                         {t("currentPrice")}
                     </Typography>
-                    <Typography weight="medium" size="sm">
-                        price
-                    </Typography>
+                    {!liquidityDensity || !pool || loadingLiquidityDensity ? (
+                        <Skeleton size="sm" width={50} />
+                    ) : (
+                        <Typography weight="medium" size="sm">
+                            {t("price", {
+                                token0: pool?.tokens[0].symbol,
+                                token1: pool?.tokens[1].symbol,
+                                price: formatAmount({
+                                    amount: getPrice(
+                                        liquidityDensity.activeIdx,
+                                        pool,
+                                    ),
+                                }),
+                            })}
+                        </Typography>
+                    )}
                 </div>
             </StepPreview>
             <StepContent>
@@ -187,15 +212,16 @@ export function RangeStep({
                     <RangeInputs
                         pool={pool}
                         error={!!error}
-                        from={from}
+                        priceFrom={from?.price}
+                        priceTo={to?.price}
                         onFromChange={setFrom}
-                        to={to}
                         onToChange={setTo}
                     />
-                    <PriceRangeChart
-                        lowerUsdPrice={from}
-                        upperUsdPrice={to}
-                        poolAddress={pool?.address}
+                    <LiquidityDensityChart
+                        from={from?.tick}
+                        liquidityDensity={liquidityDensity}
+                        pool={pool}
+                        to={to?.tick}
                     />
                     <Button
                         variant="secondary"

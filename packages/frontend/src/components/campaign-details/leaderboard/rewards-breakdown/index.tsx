@@ -2,7 +2,7 @@ import { Popover, Typography } from "@metrom-xyz/ui";
 import type { UsdPricedErc20TokenAmount } from "@metrom-xyz/sdk";
 import { SupportedChain } from "@metrom-xyz/contracts";
 import { useRef, useState } from "react";
-import { formatTokenAmount, formatUsdAmount } from "@/src/utils/format";
+import { formatAmount, formatUsdAmount } from "@/src/utils/format";
 import { RemoteLogo } from "@/src/components/remote-logo";
 
 import styles from "./styles.module.css";
@@ -58,7 +58,7 @@ export function RewardsBreakdown({
                             </div>
                             <div>
                                 <Typography weight="medium">
-                                    {formatTokenAmount({
+                                    {formatAmount({
                                         amount: distributed.amount.formatted,
                                     })}
                                 </Typography>

@@ -33,6 +33,16 @@ export enum RewardType {
     Tokens = "tokens",
 }
 
+export interface RangeBound {
+    tick: number;
+    price: number;
+}
+
+export interface EnrichedRangeSpecification {
+    from: RangeBound;
+    to: RangeBound;
+}
+
 export interface CampaignPayload {
     network?: number;
     rewardType?: RewardType;
@@ -44,7 +54,7 @@ export interface CampaignPayload {
     tokens?: WhitelistedErc20TokenAmount[];
     feeToken?: WhitelistedErc20TokenAmount;
     kpiSpecification?: KpiSpecification;
-    rangeSpecification?: RangeSpecification;
+    rangeSpecification?: EnrichedRangeSpecification;
     restrictions?: {
         type: RestrictionType;
         list: Address[];

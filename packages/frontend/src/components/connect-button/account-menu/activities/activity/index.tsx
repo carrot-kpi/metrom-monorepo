@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
 import { Typography, Skeleton } from "@metrom-xyz/ui";
 import { Link } from "@/src/i18n/routing";
-import { formatTokenAmount } from "@/src/utils/format";
+import { formatAmount } from "@/src/utils/format";
 import { trackFathomEvent } from "@/src/utils/fathom";
 import { RemoteLogo } from "@/src/components/remote-logo";
 import { ArrowRightIcon } from "@/src/assets/arrow-right-icon";
@@ -141,7 +141,7 @@ export function Activity({ chainId, transaction, payload }: ActivityProps) {
                                 {payload.token.symbol}
                             </Typography>
                             <Typography>
-                                {formatTokenAmount({
+                                {formatAmount({
                                     amount: payload.amount.formatted,
                                 })}
                             </Typography>

@@ -223,6 +223,7 @@
             "range": {
                 "title": "Set range to reward",
                 "currentPrice": "Current price",
+                "price": "1 {token0} - {price} {token1}",
                 "minPrice": "Min price ({token0} per {token1})",
                 "maxPrice": "Max price ({token0} per {token1})",
                 "apply": "Apply",
@@ -459,10 +460,10 @@
         "upTo": "up to",
         "apr": "APR"
     },
-    "priceRangeChart": {
+    "liquidityDensityChart": {
         "title": "Range visualizer",
         "tooltip": {
-            "price": "price:"
+            "price": "1 {token0} = {price} {token1}"
         },
         "emptyData": "Missing price range data",
         "errors": {

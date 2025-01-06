@@ -18,8 +18,8 @@
     @apply hover:cursor-default hover:bg-white;
 }
 
-.tvlWrapper {
-    @apply flex gap-1;
+.priceWrapper {
+    @apply w-full flex gap-1;
 }
 
 .error {

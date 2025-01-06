@@ -186,3 +186,8 @@ export interface Tick {
     price0: number;
     price1: number;
 }
+
+export interface LiquidityDensity {
+    activeIdx: number;
+    ticks: Tick[];
+}

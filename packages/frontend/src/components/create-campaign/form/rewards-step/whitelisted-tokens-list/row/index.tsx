@@ -3,7 +3,7 @@ import { type WhitelistedErc20Token } from "@metrom-xyz/sdk";
 import type { Erc20TokenWithBalance } from "@/src/hooks/useWatchBalances";
 import classNames from "classnames";
 import { Typography, Skeleton } from "@metrom-xyz/ui";
-import { formatTokenAmount, formatUsdAmount } from "@/src/utils/format";
+import { formatAmount, formatUsdAmount } from "@/src/utils/format";
 import { RemoteLogo } from "@/src/components/remote-logo";
 
 import styles from "./styles.module.css";
@@ -69,7 +69,7 @@ export function Row({
                 <div className={styles.balanceWrapper}>
                     <Typography size="sm" weight="medium">
                         {tokenWithBalance.balance
-                            ? formatTokenAmount({
+                            ? formatAmount({
                                   amount: tokenWithBalance.balance.formatted,
                               })
                             : "-"}
