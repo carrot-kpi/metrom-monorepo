@@ -179,3 +179,10 @@ export interface Leaderboard {
     updatedAt: number;
     ranks: RewardsCampaignLeaderboardRank[] | PointsCampaignLeaderboardRank[];
 }
+
+export interface Tick {
+    idx: number;
+    liquidity: bigint;
+    price0: number;
+    price1: number;
+}

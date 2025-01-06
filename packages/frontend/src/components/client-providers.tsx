@@ -17,6 +17,7 @@ import { WALLETCONNECT_PROJECT_ID } from "../commons/env";
 import duration from "dayjs/plugin/duration";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
+import utc from "dayjs/plugin/utc";
 import dayjs from "dayjs";
 import { TokenIconsProvider } from "./token-icon-provider";
 import { Toaster } from "@metrom-xyz/ui";
@@ -24,6 +25,7 @@ import { Toaster } from "@metrom-xyz/ui";
 dayjs.extend(duration);
 dayjs.extend(localizedFormat);
 dayjs.extend(relativeTime);
+dayjs.extend(utc);
 
 const config = getDefaultConfig({
     appName: "Metrom",

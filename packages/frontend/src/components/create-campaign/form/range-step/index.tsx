@@ -11,7 +11,7 @@ import type {
     CampaignPayloadErrors,
     CampaignPayloadPart,
 } from "@/src/types";
-// import { PriceRangeChart } from "@/src/components/price-range-chart";
+import { PriceRangeChart } from "@/src/components/price-range-chart";
 import { type PoolWithTvl, type RangeSpecification } from "@metrom-xyz/sdk";
 import classNames from "classnames";
 import { usePrevious } from "react-use";
@@ -192,13 +192,11 @@ export function RangeStep({
                         to={to}
                         onToChange={setTo}
                     />
-                    {/*<PriceRangeChart
-                        error={!!error}
-                        poolTick={40}
-                        activeTokenIndex={activeTokenIndex}
+                    <PriceRangeChart
                         lowerUsdPrice={from}
                         upperUsdPrice={to}
-                    />*/}
+                        poolAddress={pool?.address}
+                    />
                     <Button
                         variant="secondary"
                         size="sm"

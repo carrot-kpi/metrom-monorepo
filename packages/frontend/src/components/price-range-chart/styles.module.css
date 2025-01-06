@@ -30,26 +30,12 @@
     @apply flex items-center justify-between p-2 rounded-md;
 }
 
-.zoomButtons {
-    @apply flex items-center gap-1;
-}
-
 .zoomButton {
     @apply w-8 h-8 rounded-md;
 }
 
 .divider {
     @apply w-[1px] h-full bg-gray-500;
-}
-
-.zoomButtons > svg {
-    @apply w-5
-        h-5
-        hover:text-gray-400
-        cursor-pointer
-        transition-colors
-        duration-200
-        ease-in-out;
 }
 
 .text {

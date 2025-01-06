@@ -12,30 +12,22 @@ import {
 } from "recharts";
 import type { UsdPricedErc20Token } from "@metrom-xyz/sdk";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { zoom } from "@/src/utils/price-range";
 import { ZoomInIcon } from "@/src/assets/zoom-in-icon";
 import { ZoomOutIcon } from "@/src/assets/zoom-out-icon";
 import { TooltipContent } from "./tooltip";
+import { useTicks } from "@/src/hooks/useTicks";
+import type { Address } from "viem";
+import classNames from "classnames";
 
 import styles from "./styles.module.css";
-import classNames from "classnames";
 
 interface PriceRangeChartProps {
     error?: boolean;
-    poolTick: number;
-    activeTokenIndex: number;
+    poolAddress?: Address;
+    // activeTokenIndex: number;
     lowerUsdPrice?: number;
     upperUsdPrice?: number;
     className?: string;
-}
-
-// TODO: should we disable this for pools with more than 2 tokens?
-export interface PriceChartData {
-    tick: number;
-    usdTvl: number;
-    color: string;
-    currentPrice: boolean;
-    tokens: UsdPricedErc20Token[];
 }
 
 const ZOOM_FACTOR = 13;
@@ -44,69 +36,21 @@ const MIN_ZOOM_LEVEL = 1;
 
 export function PriceRangeChart({
     error,
-    poolTick,
-    activeTokenIndex,
+    poolAddress,
     lowerUsdPrice,
     upperUsdPrice,
     className,
 }: PriceRangeChartProps) {
     const t = useTranslations("priceRangeChart");
-    const [poolTickIndex, setPoolTickIndex] = useState<number>(-1);
-    const [activeChartData, setActiveChartData] = useState<PriceChartData[]>();
     const [zoomLevel, setZoomLevel] = useState<number>(1);
     const [xAxisDomain, setXAxisDomain] = useState<number[]>();
 
-    // TODO: remove mocked data
-    const chartData: PriceChartData[] = useMemo(() => {
-        return [];
-    }, []);
-
-    useEffect(() => {
-        const index = chartData.findIndex((data) => data.tick === poolTick);
-        setPoolTickIndex(index);
-    }, [chartData, poolTick]);
-
-    useEffect(() => {
-        setActiveChartData(
-            zoom(chartData, poolTickIndex, MIN_ZOOM_LEVEL, ZOOM_FACTOR),
-        );
-    }, [chartData, poolTickIndex]);
-
-    useEffect(() => {
-        if (activeTokenIndex === undefined || chartData.length === 0) return;
-
-        const zoomedData = zoom(
-            chartData,
-            poolTickIndex,
-            zoomLevel,
-            ZOOM_FACTOR,
-        );
-
-        setXAxisDomain([
-            zoomedData[0].tokens[activeTokenIndex].usdPrice,
-            zoomedData[zoomedData.length - 1].tokens[activeTokenIndex].usdPrice,
-        ]);
-
-        setActiveChartData(chartData.slice());
-    }, [activeTokenIndex, chartData, poolTickIndex, zoomLevel]);
-
-    const handleZoomOut = useCallback(() => {
-        setZoomLevel((prev) => Math.max(prev - 1, MIN_ZOOM_LEVEL));
-    }, []);
-
-    const handleZoomIn = useCallback(() => {
-        setZoomLevel((prev) => Math.min(prev + 1, MAX_ZOOM_LEVEL));
-    }, []);
-
-    // TODO: empty error state?
-    if (activeTokenIndex === undefined) {
-        return null;
-    }
+    const { ticks, loading } = useTicks(poolAddress);
 
     if (
         upperUsdPrice === undefined ||
         lowerUsdPrice === undefined ||
-        chartData.length === 0
+        ticks.length === 0
     )
         return (
             <div className={classNames("root", styles.root, className)}>
@@ -160,70 +104,22 @@ export function PriceRangeChart({
                 <Typography weight="medium" light uppercase size="xs">
                     {t("title")}
                 </Typography>
-                <div className={styles.zoomButtons}>
-                    <Button
-                        variant="secondary"
-                        size="xs"
-                        icon={ZoomOutIcon}
-                        disabled={zoomLevel === MIN_ZOOM_LEVEL}
-                        onClick={handleZoomOut}
-                        className={{ root: styles.zoomButton }}
-                    />
-                    <div className={styles.divider}></div>
-                    <Button
-                        variant="secondary"
-                        size="xs"
-                        icon={ZoomInIcon}
-                        disabled={zoomLevel === MAX_ZOOM_LEVEL}
-                        onClick={handleZoomIn}
-                        className={{ root: styles.zoomButton }}
-                    />
-                </div>
             </div>
             <ResponsiveContainer
                 width="100%"
                 className={classNames("container", styles.container, className)}
             >
-                <BarChart data={activeChartData} style={{ cursor: "pointer" }}>
+                <BarChart data={ticks} style={{ cursor: "pointer" }}>
                     <YAxis hide />
-                    <XAxis
-                        allowDataOverflow
-                        type="number"
-                        dataKey={(data: PriceChartData) =>
-                            data.tokens[activeTokenIndex].usdPrice
-                        }
-                        height={20}
-                        padding={{ left: 0, right: 0 }}
-                        tickSize={4}
-                        minTickGap={50}
-                        domain={xAxisDomain}
-                        axisLine={false}
-                        tick={<Tick />}
-                    />
+                    <XAxis hide />
 
                     <Bar
-                        dataKey="usdTvl"
-                        stackId="distribution"
-                        data={activeChartData}
+                        dataKey={(tick) => tick.liquidity.toString()}
                         maxBarSize={50}
                         background={{ fill: "#F3F4F6" }}
-                    >
-                        {activeChartData?.map((entry, index) => (
-                            <Cell
-                                key={`cell-${index}`}
-                                cursor="pointer"
-                                fill={entry.color}
-                            />
-                        ))}
-                        <LabelList
-                            dataKey="currentPrice"
-                            content={
-                                <CurrentPriceLabel zoomLevel={zoomLevel} />
-                            }
-                        />
-                    </Bar>
+                    />
 
-                    <Tooltip
+                    {/* <Tooltip
                         isAnimationActive={false}
                         cursor={{
                             fill: "#F3F4F6",
@@ -231,7 +127,7 @@ export function PriceRangeChart({
                             opacity: 0.5,
                         }}
                         content={<TooltipContent />}
-                    />
+                    /> */}
                 </BarChart>
             </ResponsiveContainer>
         </div>

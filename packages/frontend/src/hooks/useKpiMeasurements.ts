@@ -2,9 +2,6 @@ import { Status, type Campaign, type KpiMeasurement } from "@metrom-xyz/sdk";
 import { metromApiClient } from "../commons";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-
-dayjs.extend(utc);
 
 const MAX_DAYS_RANGE = 7;
 
