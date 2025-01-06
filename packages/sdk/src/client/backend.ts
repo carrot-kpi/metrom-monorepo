@@ -532,7 +532,7 @@ export class MetromApiClient {
             })
             .concat(subsequentTicks);
 
-        const aggregatedAverages = ticks
+        const averages = ticks
             .reduce(
                 (
                     acc: { totalLiquidity: bigint; count: bigint }[],
@@ -559,7 +559,7 @@ export class MetromApiClient {
 
                 return {
                     ...tick,
-                    liquidity: aggregatedAverages[Math.floor(index / 100)],
+                    liquidity: averages[Math.floor(index / 100)],
                 };
             })
             .filter((tick) => !!tick);
