@@ -10,9 +10,10 @@ import {
     YAxis,
 } from "recharts";
 import type { CategoricalChartState } from "recharts/types/chart/types";
-import type { LiquidityDensity, Pool, Tick } from "@metrom-xyz/sdk";
+import type { LiquidityDensity, Pool } from "@metrom-xyz/sdk";
 import { useMemo, useState } from "react";
 import { TooltipContent } from "./tooltip";
+import { formatUnits } from "viem";
 import classNames from "classnames";
 
 import styles from "./styles.module.css";
@@ -27,7 +28,12 @@ interface LiquidityDensityProps {
     className?: string;
 }
 
-export type LiquidityDensityChartData = Tick;
+export interface LiquidityDensityChartData {
+    idx: number;
+    liquidity: number;
+    price0: number;
+    price1: number;
+}
 
 export function LiquidityDensityChart({
     error,
@@ -42,9 +48,12 @@ export function LiquidityDensityChart({
     const [tooltipIndex, setTooltipIndex] = useState<number>();
 
     const chartData: LiquidityDensityChartData[] = useMemo(() => {
-        if (!liquidityDensity) return [];
-        return liquidityDensity.ticks;
-    }, [liquidityDensity]);
+        if (!liquidityDensity || !pool) return [];
+        return liquidityDensity.ticks.map((tick) => ({
+            ...tick,
+            liquidity: Number(formatUnits(tick.liquidity, 18)),
+        }));
+    }, [liquidityDensity, pool]);
 
     function handleOnMouseMove(state: CategoricalChartState) {
         if (state.isTooltipActive) setTooltipIndex(state.activeTooltipIndex);
@@ -128,12 +137,13 @@ export function LiquidityDensityChart({
                     onMouseMove={handleOnMouseMove}
                     style={{ cursor: "pointer" }}
                 >
-                    <YAxis hide />
+                    <YAxis hide domain={[0, "auto"]} />
                     <XAxis hide dataKey="price0" />
 
                     <Bar
-                        dataKey={(tick) => tick.liquidity.toString()}
+                        dataKey="liquidity"
                         maxBarSize={50}
+                        minPointSize={10}
                         shape={
                             <CustomBar
                                 from={from}
