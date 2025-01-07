@@ -10,7 +10,7 @@
     @apply w-full
         h-full
         px-3
-        min-h-[368px]
+        min-h-[352px]
         flex
         justify-center
         items-center
@@ -20,6 +20,10 @@
 
 .errorText {
     @apply flex-col;
+}
+
+.loading {
+    @apply bg-gray-100 animate-pulse;
 }
 
 .container {

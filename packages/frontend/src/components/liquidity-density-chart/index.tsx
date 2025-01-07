@@ -18,6 +18,7 @@ import styles from "./styles.module.css";
 
 interface LiquidityDensityProps {
     error?: boolean;
+    loading?: boolean;
     pool?: Pool;
     liquidityDensity?: LiquidityDensity;
     from?: number;
@@ -29,6 +30,7 @@ export type LiquidityDensityChartData = Tick;
 
 export function LiquidityDensityChart({
     error,
+    loading,
     pool,
     liquidityDensity,
     from,
@@ -85,6 +87,20 @@ export function LiquidityDensityChart({
                         {t("errors.wrongData")}
                     </ErrorText>
                 </div>
+            </div>
+        );
+    }
+
+    if (loading) {
+        return (
+            <div className={classNames("root", styles.root, className)}>
+                <div
+                    className={classNames(
+                        "emptyContainer",
+                        styles.emptyContainer,
+                        styles.loading,
+                    )}
+                ></div>
             </div>
         );
     }

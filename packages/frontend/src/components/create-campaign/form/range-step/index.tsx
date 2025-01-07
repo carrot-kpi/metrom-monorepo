@@ -218,10 +218,12 @@ export function RangeStep({
                         onToChange={setTo}
                     />
                     <LiquidityDensityChart
+                        error={!!error}
+                        loading={loadingLiquidityDensity}
                         from={from?.tick}
-                        liquidityDensity={liquidityDensity}
-                        pool={pool}
                         to={to?.tick}
+                        pool={pool}
+                        liquidityDensity={liquidityDensity}
                     />
                     <Button
                         variant="secondary"
