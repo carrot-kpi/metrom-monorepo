@@ -9,8 +9,9 @@ import {
     XAxis,
     YAxis,
 } from "recharts";
+import type { CategoricalChartState } from "recharts/types/chart/types";
 import type { LiquidityDensity, Pool, Tick } from "@metrom-xyz/sdk";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { TooltipContent } from "./tooltip";
 import classNames from "classnames";
 
@@ -38,11 +39,17 @@ export function LiquidityDensityChart({
     className,
 }: LiquidityDensityProps) {
     const t = useTranslations("liquidityDensityChart");
+    const [tooltipIndex, setTooltipIndex] = useState<number>();
 
-    const chartData: Tick[] = useMemo(() => {
+    const chartData: LiquidityDensityChartData[] = useMemo(() => {
         if (!liquidityDensity) return [];
         return liquidityDensity.ticks;
     }, [liquidityDensity]);
+
+    function handleOnMouseMove(state: CategoricalChartState) {
+        if (state.isTooltipActive) setTooltipIndex(state.activeTooltipIndex);
+        else setTooltipIndex(undefined);
+    }
 
     if (!liquidityDensity || liquidityDensity.ticks.length === 0)
         return (
@@ -116,47 +123,36 @@ export function LiquidityDensityChart({
                 width="100%"
                 className={classNames("container", styles.container, className)}
             >
-                <BarChart data={chartData} style={{ cursor: "pointer" }}>
-                    <YAxis hide domain={["dataMin", "dataMax"]} />
+                <BarChart
+                    data={chartData}
+                    onMouseMove={handleOnMouseMove}
+                    style={{ cursor: "pointer" }}
+                >
+                    <YAxis hide />
                     <XAxis hide dataKey="price0" />
 
                     <Bar
                         dataKey={(tick) => tick.liquidity.toString()}
-                        stackId="distribution"
                         maxBarSize={50}
-                        fillOpacity={1}
-                        isAnimationActive={false}
+                        shape={
+                            <CustomBar
+                                from={from}
+                                to={to}
+                                activeIdx={liquidityDensity.activeIdx}
+                                tooltipIndex={tooltipIndex}
+                            />
+                        }
                     >
-                        {chartData?.map(({ idx }, index) => {
-                            const tickInRange =
-                                from !== undefined &&
-                                to !== undefined &&
-                                idx >= from &&
-                                idx < to;
-
+                        {chartData?.map((_, index) => {
                             return (
-                                <Cell
-                                    key={`cell-${index}`}
-                                    cursor="pointer"
-                                    fill={
-                                        idx === liquidityDensity?.activeIdx
-                                            ? "#6CFF95"
-                                            : tickInRange
-                                              ? "#6CFF9566"
-                                              : "#E5E7EB"
-                                    }
-                                />
+                                <Cell key={`cell-${index}`} cursor="pointer" />
                             );
                         })}
                     </Bar>
 
                     <Tooltip
                         isAnimationActive={false}
-                        cursor={{
-                            fill: "#F3F4F6",
-                            strokeWidth: 0,
-                            opacity: 0.5,
-                        }}
+                        cursor={false}
                         content={<TooltipContent pool={pool} />}
                     />
                 </BarChart>
@@ -164,3 +160,59 @@ export function LiquidityDensityChart({
         </div>
     );
 }
+
+interface ChartProps {
+    index?: number;
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+    from?: number;
+    to?: number;
+    idx?: number;
+    activeIdx?: number;
+    tooltipIndex?: number;
+}
+
+const CustomBar = ({
+    index,
+    x,
+    y,
+    width,
+    height,
+    from,
+    to,
+    idx,
+    activeIdx,
+    tooltipIndex,
+}: ChartProps) => {
+    if (
+        !idx ||
+        width === undefined ||
+        height === undefined ||
+        x === undefined ||
+        y === undefined
+    )
+        return null;
+
+    const inRange = !!from && !!to && idx >= from && idx < to;
+    const fill =
+        idx === activeIdx ? "#6CFF95" : inRange ? "#6CFF9566" : "#E5E7EB";
+
+    let opacity = 1;
+    if (tooltipIndex === index) opacity = 0.65;
+
+    return (
+        <g>
+            <rect
+                x={x}
+                y={y}
+                fill={fill}
+                fillOpacity={opacity}
+                width={width}
+                height={height}
+                rx={4}
+            />
+        </g>
+    );
+};
