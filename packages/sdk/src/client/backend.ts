@@ -36,7 +36,8 @@ import { getPrice } from "../utils";
 
 const MIN_TICK = -887272;
 const MAX_TICK = -MIN_TICK;
-const COMPUTE_TICKS_AMPUNT = 1500;
+const COMPUTE_TICKS_AMOUNT = 1500;
+const TICK_AGGREGATION_THRESHOLD = 100;
 const BI_1_000_000 = BigInt(1_000_000);
 
 export interface FetchCampaignParams {
@@ -511,7 +512,7 @@ export class MetromApiClient {
             initializedTicksByIdx,
             activeTickProcessed,
             params.pool,
-            COMPUTE_TICKS_AMPUNT,
+            COMPUTE_TICKS_AMOUNT,
             Direction.Asc,
         );
 
@@ -519,7 +520,7 @@ export class MetromApiClient {
             initializedTicksByIdx,
             activeTickProcessed,
             params.pool,
-            COMPUTE_TICKS_AMPUNT,
+            COMPUTE_TICKS_AMOUNT,
             Direction.Desc,
         );
 
@@ -532,6 +533,7 @@ export class MetromApiClient {
             })
             .concat(subsequentTicks);
 
+        // TODO: improve aggregation logic
         const averages = ticks
             .reduce(
                 (
@@ -539,7 +541,9 @@ export class MetromApiClient {
                     tick,
                     index,
                 ) => {
-                    const chunkIndex = Math.floor(index / 100);
+                    const chunkIndex = Math.floor(
+                        index / TICK_AGGREGATION_THRESHOLD,
+                    );
 
                     if (!acc[chunkIndex])
                         acc[chunkIndex] = { totalLiquidity: 0n, count: 0n };
@@ -555,11 +559,14 @@ export class MetromApiClient {
 
         const aggregatedTicks = ticks
             .map((tick, index) => {
-                if (index % 100 !== 0) return;
+                if (index % TICK_AGGREGATION_THRESHOLD !== 0) return;
 
                 return {
                     ...tick,
-                    liquidity: averages[Math.floor(index / 100)],
+                    liquidity:
+                        averages[
+                            Math.floor(index / TICK_AGGREGATION_THRESHOLD)
+                        ],
                 };
             })
             .filter((tick) => !!tick);
