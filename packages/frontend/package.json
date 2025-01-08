@@ -15,7 +15,7 @@
         "@floating-ui/vue": "^1.1.5",
         "@fontsource/ibm-plex-mono": "^5.1.1",
         "@fontsource/ibm-plex-sans": "^5.1.1",
-        "@metrom-xyz/contracts": "^0.35.0",
+        "@metrom-xyz/contracts": "^0.36.0",
         "@metrom-xyz/sdk": "workspace:*",
         "@metrom-xyz/ui": "workspace:*",
         "@popperjs/core": "^2.11.8",

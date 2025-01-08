@@ -124,10 +124,11 @@ type CreateRewardsCampaignEvent @entity(immutable: true) {
     metrom: Metrom!
     campaign: RewardsCampaign!
     owner: Bytes!
-    pool: Bytes!
     from: BigInt!
     to: BigInt!
-    specification: Bytes!
+    kind: BigInt!
+    data: Bytes!
+    specificationHash: Bytes!
     rewards: [CreatedCampaignReward!]!
         @derivedFrom(field: "createRewardsCampaignEvent")
 }
@@ -146,10 +147,11 @@ type CreatePointsCampaignEvent @entity(immutable: true) {
     metrom: Metrom!
     campaign: PointsCampaign!
     owner: Bytes!
-    pool: Bytes!
     from: BigInt!
     to: BigInt!
-    specification: Bytes!
+    kind: BigInt!
+    data: Bytes!
+    specificationHash: Bytes!
     points: BigInt!
     feeToken: WhitelistedFeeToken!
     fee: BigInt!
@@ -327,12 +329,13 @@ type RewardsCampaign @entity {
     creationTimestamp: BigInt!
     owner: Bytes!
     pendingOwner: Bytes!
-    pool: Bytes!
     from: BigInt!
     to: BigInt!
-    specification: Bytes!
-    root: Bytes!
+    kind: BigInt!
     data: Bytes!
+    specificationHash: Bytes!
+    dataHash: Bytes!
+    root: Bytes!
 
     rewards: [Reward!]! @derivedFrom(field: "campaign")
 
@@ -381,10 +384,12 @@ type PointsCampaign @entity {
     creationTimestamp: BigInt!
     owner: Bytes!
     pendingOwner: Bytes!
-    pool: Bytes!
     from: BigInt!
     to: BigInt!
-    specification: Bytes!
+    kind: BigInt!
+    data: Bytes!
+    specificationHash: Bytes!
+    dataHash: Bytes!
     points: BigInt!
 
     createEvent: CreatePointsCampaignEvent! @derivedFrom(field: "campaign")

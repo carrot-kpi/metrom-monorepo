@@ -19,7 +19,13 @@ import { Header } from "./header";
 import { formatAmount, formatUsdAmount } from "@/src/utils/format";
 import { getCampaignPreviewApr } from "@/src/utils/campaign";
 import { trackFathomEvent } from "@/src/utils/fathom";
-import { type Hex, zeroHash, parseUnits, formatUnits } from "viem";
+import {
+    type Hex,
+    zeroHash,
+    parseUnits,
+    formatUnits,
+    encodeAbiParameters,
+} from "viem";
 import {
     SERVICE_URLS,
     type Specification,
@@ -94,10 +100,14 @@ export function CampaignPreview({
             return [
                 [
                     {
-                        pool: pool.address,
                         from: startDate.unix(),
                         to: endDate.unix(),
-                        specification: specificationHash,
+                        kind: 1,
+                        data: encodeAbiParameters(
+                            [{ name: "poolAddress", type: "address" }],
+                            [pool.address],
+                        ),
+                        specificationHash,
                         rewards: tokens.map((token) => ({
                             token: token.token.address,
                             amount: token.amount.raw,
@@ -112,10 +122,14 @@ export function CampaignPreview({
                 [],
                 [
                     {
-                        pool: pool.address,
                         from: startDate.unix(),
                         to: endDate.unix(),
-                        specification: specificationHash,
+                        kind: 1,
+                        data: encodeAbiParameters(
+                            [{ name: "poolAddress", type: "address" }],
+                            [pool.address],
+                        ),
+                        specificationHash,
                         points: parseUnits(points.toString(), 18),
                         feeToken: feeToken.token.address,
                     },
