@@ -145,7 +145,7 @@ export function LiquidityDensityChart({
                         maxBarSize={50}
                         minPointSize={10}
                         shape={
-                            <CustomBar
+                            <LiquidityBar
                                 from={from}
                                 to={to}
                                 activeIdx={liquidityDensity.activeIdx}
@@ -171,7 +171,7 @@ export function LiquidityDensityChart({
     );
 }
 
-interface ChartProps {
+interface LiquidityBarProps {
     index?: number;
     x?: number;
     y?: number;
@@ -184,7 +184,7 @@ interface ChartProps {
     tooltipIndex?: number;
 }
 
-const CustomBar = ({
+const LiquidityBar = ({
     index,
     x,
     y,
@@ -195,7 +195,7 @@ const CustomBar = ({
     idx,
     activeIdx,
     tooltipIndex,
-}: ChartProps) => {
+}: LiquidityBarProps) => {
     if (
         !idx ||
         width === undefined ||
@@ -205,7 +205,8 @@ const CustomBar = ({
     )
         return null;
 
-    const inRange = !!from && !!to && idx >= from && idx < to;
+    const inRange =
+        from !== undefined && to !== undefined && idx >= from && idx < to;
     const fill =
         idx === activeIdx ? "#6CFF95" : inRange ? "#6CFF9566" : "#E5E7EB";
 
