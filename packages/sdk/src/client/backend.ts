@@ -37,7 +37,7 @@ import { getPrice } from "../utils";
 const MIN_TICK = -887272;
 const MAX_TICK = -MIN_TICK;
 const COMPUTE_TICKS_AMOUNT = 1500;
-const TICK_AGGREGATION_THRESHOLD = 100;
+const TICK_AVERAGE_FACTOR = 100;
 const BI_1_000_000 = BigInt(1_000_000);
 
 export interface FetchCampaignParams {
@@ -524,56 +524,18 @@ export class MetromApiClient {
             Direction.Desc,
         );
 
-        const ticks = previousTicks
+        const ticks = averageTicks(previousTicks)
             .concat({
                 idx: activeTickProcessed.idx,
                 liquidity: activeTickProcessed.liquidity.active,
                 price0: activeTickProcessed.price0,
                 price1: activeTickProcessed.price1,
             })
-            .concat(subsequentTicks);
-
-        // TODO: improve aggregation logic
-        const averages = ticks
-            .reduce(
-                (
-                    acc: { totalLiquidity: bigint; count: bigint }[],
-                    tick,
-                    index,
-                ) => {
-                    const chunkIndex = Math.floor(
-                        index / TICK_AGGREGATION_THRESHOLD,
-                    );
-
-                    if (!acc[chunkIndex])
-                        acc[chunkIndex] = { totalLiquidity: 0n, count: 0n };
-
-                    acc[chunkIndex].totalLiquidity += tick.liquidity;
-                    acc[chunkIndex].count += 1n;
-
-                    return acc;
-                },
-                [],
-            )
-            .map((chunk) => chunk.totalLiquidity / chunk.count);
-
-        const aggregatedTicks = ticks
-            .map((tick, index) => {
-                if (index % TICK_AGGREGATION_THRESHOLD !== 0) return;
-
-                return {
-                    ...tick,
-                    liquidity:
-                        averages[
-                            Math.floor(index / TICK_AGGREGATION_THRESHOLD)
-                        ],
-                };
-            })
-            .filter((tick) => !!tick);
+            .concat(averageTicks(subsequentTicks));
 
         return {
             activeIdx: activeTick.idx,
-            ticks: aggregatedTicks,
+            ticks,
         };
     }
 }
@@ -765,4 +727,23 @@ function computeSurroundingTicks(
             price1: tick.price1,
         };
     });
+}
+
+function averageTicks(ticks: Tick[]) {
+    const averagedTicks: Tick[] = [];
+    let averageLiquidity = 0n;
+
+    ticks.forEach((tick, index) => {
+        averageLiquidity += tick.liquidity;
+
+        if ((index + 1) % TICK_AVERAGE_FACTOR === 0) {
+            averagedTicks.push({
+                ...tick,
+                liquidity: averageLiquidity / BigInt(TICK_AVERAGE_FACTOR),
+            });
+            averageLiquidity = 0n;
+        }
+    });
+
+    return averagedTicks;
 }

@@ -60,6 +60,20 @@ export function LiquidityDensityChart({
         else setTooltipIndex(undefined);
     }
 
+    if (loading) {
+        return (
+            <div className={classNames("root", styles.root, className)}>
+                <div
+                    className={classNames(
+                        "emptyContainer",
+                        styles.emptyContainer,
+                        styles.loading,
+                    )}
+                ></div>
+            </div>
+        );
+    }
+
     if (!liquidityDensity || liquidityDensity.ticks.length === 0)
         return (
             <div className={classNames("root", styles.root, className)}>
@@ -103,20 +117,6 @@ export function LiquidityDensityChart({
                         {t("errors.wrongData")}
                     </ErrorText>
                 </div>
-            </div>
-        );
-    }
-
-    if (loading) {
-        return (
-            <div className={classNames("root", styles.root, className)}>
-                <div
-                    className={classNames(
-                        "emptyContainer",
-                        styles.emptyContainer,
-                        styles.loading,
-                    )}
-                ></div>
             </div>
         );
     }
