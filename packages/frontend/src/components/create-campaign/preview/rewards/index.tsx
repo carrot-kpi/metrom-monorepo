@@ -7,7 +7,7 @@ import { Dayjs } from "dayjs";
 import { useMemo } from "react";
 import {
     formatPercentage,
-    formatTokenAmount,
+    formatAmount,
     formatUsdAmount,
 } from "@/src/utils/format";
 import { RemoteLogo } from "@/src/components/remote-logo";
@@ -79,7 +79,7 @@ export function Rewards({ rewards, startDate, endDate }: RewardsProps) {
                             {formatUsdAmount(reward.amount.usdValue || 0)}
                         </Typography>
                         <Typography weight="medium" size="xl">
-                            {formatTokenAmount({
+                            {formatAmount({
                                 amount: reward.amount.formatted,
                                 humanize: false,
                             })}

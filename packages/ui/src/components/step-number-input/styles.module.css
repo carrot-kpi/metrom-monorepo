@@ -1,0 +1,38 @@
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.wrapper {
+    @apply relative flex items-center;
+}
+
+/* TODO: to be based on size */
+.stepButton {
+    @apply w-8 h-8 bg-white rounded-md;
+}
+
+.stepDownButton {
+    @apply absolute left-2;
+}
+
+.stepUpButton {
+    @apply absolute right-2;
+}
+
+.wrapper input {
+    @apply pl-12;
+}
+
+.wrapper input {
+    @apply pr-12;
+}
+
+.hiddenInput {
+    @apply hidden;
+}

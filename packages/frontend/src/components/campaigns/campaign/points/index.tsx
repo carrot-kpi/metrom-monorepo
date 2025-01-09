@@ -3,7 +3,7 @@ import { Popover, Typography } from "@metrom-xyz/ui";
 import { PointsIcon } from "@/src/assets/points-icon";
 import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { formatTokenAmount } from "@/src/utils/format";
+import { formatAmount } from "@/src/utils/format";
 
 import styles from "./syles.module.css";
 
@@ -44,7 +44,7 @@ export function Points({ status, amount, daysDuration }: PointsProps) {
                         {t("tooltip.points")}
                     </Typography>
                     <Typography size="lg" weight="medium">
-                        {formatTokenAmount({ amount: amount.formatted })}
+                        {formatAmount({ amount: amount.formatted })}
                     </Typography>
                 </div>
             </Popover>
@@ -59,7 +59,7 @@ export function Points({ status, amount, daysDuration }: PointsProps) {
             <Typography weight="medium" className={styles.textPoints}>
                 {status === Status.Ended
                     ? "-"
-                    : formatTokenAmount({ amount: perDayPoints })}
+                    : formatAmount({ amount: perDayPoints })}
             </Typography>
         </div>
     );

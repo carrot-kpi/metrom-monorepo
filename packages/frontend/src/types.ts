@@ -1,6 +1,7 @@
 import type {
     KpiSpecification,
     PoolWithTvl,
+    RangeSpecification,
     SupportedDex,
     WhitelistedErc20Token,
     WhitelistedErc20TokenAmount,
@@ -23,13 +24,23 @@ export interface Dex {
 }
 
 export enum RestrictionType {
-    blacklist = "blacklist",
-    whitelist = "whitelist",
+    Blacklist = "blacklist",
+    Whitelist = "whitelist",
 }
 
 export enum RewardType {
-    points = "points",
-    tokens = "tokens",
+    Points = "points",
+    Tokens = "tokens",
+}
+
+export interface RangeBound {
+    tick: number;
+    price: number;
+}
+
+export interface EnrichedRangeSpecification {
+    from: RangeBound;
+    to: RangeBound;
 }
 
 export interface CampaignPayload {
@@ -43,6 +54,7 @@ export interface CampaignPayload {
     tokens?: WhitelistedErc20TokenAmount[];
     feeToken?: WhitelistedErc20TokenAmount;
     kpiSpecification?: KpiSpecification;
+    rangeSpecification?: EnrichedRangeSpecification;
     restrictions?: {
         type: RestrictionType;
         list: Address[];
@@ -54,6 +66,7 @@ export interface CampaignPayloadErrors {
     endDate?: boolean;
     rewards?: boolean;
     kpiSpecification?: boolean;
+    rangeSpecification?: boolean;
     restrictions?: boolean;
 }
 

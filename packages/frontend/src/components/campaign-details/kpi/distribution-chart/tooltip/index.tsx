@@ -1,4 +1,4 @@
-import { formatPercentage, formatTokenAmount } from "@/src/utils/format";
+import { formatPercentage, formatAmount } from "@/src/utils/format";
 import styles from "./styles.module.css";
 import { useTranslations } from "next-intl";
 import { Typography } from "@metrom-xyz/ui";
@@ -87,12 +87,12 @@ export function TooltipContent({ chain, active, payload }: TooltipProps) {
                         <Typography weight="medium">{token.symbol}</Typography>
                     </div>
                     <Typography weight="medium">
-                        {formatTokenAmount({
+                        {formatAmount({
                             amount: distributed.formatted,
                         })}
                     </Typography>
                     <Typography weight="medium">
-                        {formatTokenAmount({
+                        {formatAmount({
                             amount: reimbursed.formatted,
                         })}
                     </Typography>

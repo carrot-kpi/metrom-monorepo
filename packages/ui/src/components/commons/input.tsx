@@ -99,15 +99,10 @@ export const BaseInputWrapper = ({
             <div className={classNames("inputWrapper", styles.inputWrapper)}>
                 {iconPlacement === "left" && icon}
                 {React.cloneElement(children, {
-                    className: classNames(
-                        "input",
-                        styles.input,
-                        children.props.className,
-                        {
-                            [styles.inputError]: !!error,
-                            [styles.inputLoading]: !!loading,
-                        },
-                    ),
+                    className: classNames(children.props.className, {
+                        [styles.inputError]: !!error,
+                        [styles.inputLoading]: !!loading,
+                    }),
                 })}
                 {iconPlacement === "right" && icon}
             </div>

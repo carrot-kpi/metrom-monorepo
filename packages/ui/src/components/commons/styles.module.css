@@ -84,7 +84,8 @@
     @apply h-5 w-5;
 }
 
-.inputError {
+.inputError,
+.inputError > input {
     @apply border-red-600;
 }
 

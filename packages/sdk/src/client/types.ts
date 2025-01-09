@@ -95,3 +95,15 @@ export interface BackendLeaderboard {
         | BackendRewardsCampaignLeaderboardRank[]
         | BackendPointsCampaignLeaderboardRank[];
 }
+
+export interface BackendInitializedTicks {
+    activeTick: {
+        idx: number;
+        liquidity: string;
+    };
+    ticks: {
+        idx: number;
+        liquidityGross: string;
+        liquidityNet: string;
+    }[];
+}

@@ -1,0 +1,18 @@
+.root {
+    @apply flex
+        flex-col
+        gap-2
+        p-2
+        rounded-lg
+        bg-white
+        border
+        border-gray-200;
+}
+
+.row {
+    @apply flex gap-3 items-center;
+}
+
+.tokenWrapper {
+    @apply flex items-center gap-2;
+}

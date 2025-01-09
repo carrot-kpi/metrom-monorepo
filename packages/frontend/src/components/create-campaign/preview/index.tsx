@@ -16,7 +16,7 @@ import { ArrowRightIcon } from "@/src/assets/arrow-right-icon";
 import { ApproveTokensButton } from "./approve-tokens-button";
 import { Rewards } from "./rewards";
 import { Header } from "./header";
-import { formatTokenAmount, formatUsdAmount } from "@/src/utils/format";
+import { formatAmount, formatUsdAmount } from "@/src/utils/format";
 import { getCampaignPreviewApr } from "@/src/utils/campaign";
 import { trackFathomEvent } from "@/src/utils/fathom";
 import {
@@ -31,7 +31,7 @@ import {
     type Specification,
     type WhitelistedErc20TokenAmount,
 } from "@metrom-xyz/sdk";
-import { ENVIRONMENT, KPI } from "@/src/commons/env";
+import { ENVIRONMENT } from "@/src/commons/env";
 import { Kpi } from "./kpi";
 import { AprChip } from "../../apr-chip";
 
@@ -66,9 +66,9 @@ export function CampaignPreview({
     const { writeContractAsync } = useWriteContract();
 
     const tokensToApprove = useMemo(() => {
-        if (payload.rewardType === RewardType.tokens) return payload.tokens;
+        if (payload.rewardType === RewardType.Tokens) return payload.tokens;
 
-        if (payload.rewardType === RewardType.points && payload.feeToken) {
+        if (payload.rewardType === RewardType.Points && payload.feeToken) {
             const { amount, token } = payload.feeToken;
 
             const newRaw = (amount.raw * 115n) / 100n;
@@ -93,7 +93,7 @@ export function CampaignPreview({
         if (!tokensApproved || !pool || !startDate || !endDate) return [[], []];
 
         if (
-            payload.rewardType === RewardType.tokens &&
+            payload.rewardType === RewardType.Tokens &&
             tokens &&
             tokens.length > 0
         )
@@ -117,7 +117,7 @@ export function CampaignPreview({
                 [],
             ];
 
-        if (payload.rewardType === RewardType.points && points && feeToken)
+        if (payload.rewardType === RewardType.Points && points && feeToken)
             return [
                 [],
                 [
@@ -161,11 +161,19 @@ export function CampaignPreview({
         const uploadSpecification = async () => {
             setUploadingSpecification(true);
 
-            const { restrictions, kpiSpecification } = payload;
+            const { restrictions, kpiSpecification, rangeSpecification } =
+                payload;
 
             let specification: Specification = {
                 kpi: kpiSpecification,
             };
+
+            if (rangeSpecification)
+                specification.priceRange = {
+                    from: rangeSpecification.from.price,
+                    to: rangeSpecification.to.price,
+                };
+
             if (restrictions)
                 specification[restrictions.type] = restrictions?.list;
 
@@ -197,7 +205,9 @@ export function CampaignPreview({
         };
 
         if (
-            (payload.kpiSpecification || payload.restrictions) &&
+            (payload.kpiSpecification ||
+                payload.restrictions ||
+                payload.rangeSpecification) &&
             tokensApproved
         )
             uploadSpecification();
@@ -267,7 +277,7 @@ export function CampaignPreview({
                     onBack={onBack}
                 />
                 <div className={styles.content}>
-                    {KPI && !!payload.kpiSpecification && (
+                    {!!payload.kpiSpecification && (
                         <Kpi
                             poolUsdTvl={payload.pool?.usdTvl}
                             rewards={payload.tokens}
@@ -281,7 +291,7 @@ export function CampaignPreview({
                             label={t("tvl")}
                             value={formatUsdAmount(payload.pool?.usdTvl)}
                         />
-                        {payload.rewardType === RewardType.tokens && (
+                        {payload.rewardType === RewardType.Tokens && (
                             <TextField
                                 boxed
                                 size="xl"
@@ -295,18 +305,18 @@ export function CampaignPreview({
                                 }
                             />
                         )}
-                        {payload.rewardType === RewardType.points && (
+                        {payload.rewardType === RewardType.Points && (
                             <TextField
                                 boxed
                                 size="xl"
                                 label={t("points")}
-                                value={formatTokenAmount({
+                                value={formatAmount({
                                     amount: payload.points,
                                 })}
                             />
                         )}
                     </div>
-                    {payload.rewardType === RewardType.tokens && (
+                    {payload.rewardType === RewardType.Tokens && (
                         <Rewards
                             rewards={payload.tokens}
                             startDate={payload.startDate}

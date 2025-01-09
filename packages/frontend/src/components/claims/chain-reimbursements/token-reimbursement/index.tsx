@@ -13,7 +13,7 @@ import { useCallback, useState } from "react";
 import type { TokenReimbursements } from "..";
 import { toast } from "sonner";
 import { useChainData } from "@/src/hooks/useChainData";
-import { formatTokenAmount } from "@/src/utils/format";
+import { formatAmount } from "@/src/utils/format";
 import { trackFathomEvent } from "@/src/utils/fathom";
 import { RemoteLogo } from "@/src/components/remote-logo";
 import type { WriteContractErrorType } from "viem";
@@ -142,7 +142,7 @@ export function TokenReimbursement({
                     {tokenReimbursements.token.symbol}
                 </Typography>
                 <Typography size="lg" weight="medium">
-                    {formatTokenAmount({
+                    {formatAmount({
                         amount: tokenReimbursements.totalAmount,
                     })}
                 </Typography>

@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import dayjs from "dayjs";
 import { useMemo } from "react";
 import type { NamedCampaign } from "@/src/hooks/useCampaigns";
-import { formatTokenAmount } from "@/src/utils/format";
+import { formatAmount } from "@/src/utils/format";
 
 import styles from "./styles.module.css";
 
@@ -37,7 +37,7 @@ export function Points({ campaign, loading }: PointsProps) {
                     size="xl"
                     label={t("total")}
                     loading={loading || !campaign}
-                    value={formatTokenAmount({
+                    value={formatAmount({
                         amount: campaign.points?.formatted,
                     })}
                 />
@@ -46,7 +46,7 @@ export function Points({ campaign, loading }: PointsProps) {
                     size="xl"
                     label={t("daily")}
                     loading={loading || !campaign}
-                    value={formatTokenAmount({
+                    value={formatAmount({
                         amount: dailyPoints,
                     })}
                 />

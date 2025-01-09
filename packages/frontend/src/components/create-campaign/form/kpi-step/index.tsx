@@ -15,6 +15,7 @@ import { KpiMetric, type KpiSpecification } from "@metrom-xyz/sdk";
 import { usePrevious } from "react-use";
 import { KpiSimulationChart } from "../../../kpi-simulation-chart";
 import { GoalInputs } from "./goal-inputs";
+import { useChainId } from "wagmi";
 
 import styles from "./styles.module.css";
 
@@ -51,6 +52,7 @@ export function KpiStep({
     >(kpiSpecification?.goal.upperUsdTarget);
 
     const prevKpiSpecification = usePrevious(kpiSpecification);
+    const chainId = useChainId();
 
     const totalRewardsUsdAmount = useMemo(() => {
         if (!rewards) return 0;
@@ -96,6 +98,10 @@ export function KpiStep({
                   minimumPayoutPercentage,
               }
             : undefined;
+
+    useEffect(() => {
+        setEnabled(false);
+    }, [chainId]);
 
     // this hooks is used to disable and close the step when
     // the kpi specification gets disabled, after the campaign creation

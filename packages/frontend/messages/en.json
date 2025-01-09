@@ -219,6 +219,21 @@
                 },
                 "minimumPayout": "Minimum payout",
                 "apply": "Apply"
+            },
+            "range": {
+                "title": "Set range to reward",
+                "currentPrice": "Current price",
+                "price": "1 {token0} - {price} {token1}",
+                "minPrice": "Min price ({token1} per {token0})",
+                "maxPrice": "Max price ({token1} per {token0})",
+                "apply": "Apply",
+                "errors": {
+                    "missing": "Bound missing",
+                    "malformed": "Wrong bound values"
+                },
+                "warnings": {
+                    "notApplied": "Changes not applied"
+                }
             }
         },
         "submit": {
@@ -444,5 +459,16 @@
     "apr": {
         "upTo": "up to",
         "apr": "APR"
+    },
+    "liquidityDensityChart": {
+        "title": "Range visualizer",
+        "tooltip": {
+            "price": "1 {token0} = {price} {token1}"
+        },
+        "emptyData": "Missing price range data",
+        "errors": {
+            "wrongData": "Wrong data",
+            "missingData": "Fill both min and max price values"
+        }
     }
 }

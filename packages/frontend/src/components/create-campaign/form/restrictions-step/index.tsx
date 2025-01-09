@@ -56,7 +56,7 @@ export function RestrictionsStep({
     const [error, setError] = useState("");
     const [warning, setWarning] = useState("");
     const [type, setType] = useState(
-        restrictions?.type || RestrictionType.blacklist,
+        restrictions?.type || RestrictionType.Blacklist,
     );
     const [address, setAddress] = useState("");
     const [addresses, setAddresses] = useState<Address[]>(
@@ -87,7 +87,7 @@ export function RestrictionsStep({
         if (restrictions) onRestrictionsChange({ restrictions: undefined });
 
         setAddress("");
-        setType(RestrictionType.blacklist);
+        setType(RestrictionType.Blacklist);
         setAddresses([]);
     }, [enabled, onRestrictionsChange, restrictions]);
 
@@ -209,9 +209,9 @@ export function RestrictionsStep({
             >
                 <div className={styles.typeWrapper}>
                     <Typography weight="medium" size="sm" uppercase>
-                        {type === RestrictionType.blacklist &&
+                        {type === RestrictionType.Blacklist &&
                             t("blocks", { count: addresses.length })}
-                        {type === RestrictionType.whitelist &&
+                        {type === RestrictionType.Whitelist &&
                             t("allows", { count: addresses.length })}
                     </Typography>
                 </div>
@@ -223,7 +223,7 @@ export function RestrictionsStep({
                     </Typography>
                     <div className={styles.inputsWrapper}>
                         <Tabs value={type} onChange={setType}>
-                            <Tab value={RestrictionType.blacklist}>
+                            <Tab value={RestrictionType.Blacklist}>
                                 <div className={styles.tab}>
                                     <Dot color="red" />
                                     <Typography weight="medium">
@@ -231,7 +231,7 @@ export function RestrictionsStep({
                                     </Typography>
                                 </div>
                             </Tab>
-                            <Tab value={RestrictionType.whitelist}>
+                            <Tab value={RestrictionType.Whitelist}>
                                 <div className={styles.tab}>
                                     <Dot color="green" />
                                     <Typography weight="medium">

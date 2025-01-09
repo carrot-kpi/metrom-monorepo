@@ -74,10 +74,16 @@ export interface KpiSpecification {
     goal: RangePoolTvlKpiGoal;
 }
 
+export interface RangeSpecification {
+    from: number;
+    to: number;
+}
+
 export interface Specification {
     whitelist?: Address[];
     blacklist?: Address[];
     kpi?: KpiSpecification;
+    priceRange?: RangeSpecification;
 }
 
 export interface KpiSpecificationWithMeasurement extends KpiSpecification {
@@ -172,4 +178,16 @@ export interface PointsCampaignLeaderboardRank {
 export interface Leaderboard {
     updatedAt: number;
     ranks: RewardsCampaignLeaderboardRank[] | PointsCampaignLeaderboardRank[];
+}
+
+export interface Tick {
+    idx: number;
+    liquidity: bigint;
+    price0: number;
+    price1: number;
+}
+
+export interface LiquidityDensity {
+    activeIdx: number;
+    ticks: Tick[];
 }

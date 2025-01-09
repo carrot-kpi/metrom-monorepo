@@ -2,6 +2,9 @@ import { forwardRef, useId } from "react";
 import type { ReactElement } from "react";
 import type { BaseInputProps } from "./commons/input";
 import { BaseInputWrapper } from "./commons/input";
+import classNames from "classnames";
+
+import styles from "./commons/styles.module.css";
 
 export type TextInputProps = Omit<BaseInputProps<string>, "id"> & {
     id?: string;
@@ -48,6 +51,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
                     value={value}
                     disabled={loading || disabled}
                     {...rest}
+                    className={classNames("input", styles.input)}
                 />
             </BaseInputWrapper>
         );

@@ -11,7 +11,7 @@ export function formatPercentage(amount?: number | null): string {
     return `${numeral(amount).format("0,0.0[0]a")}%`;
 }
 
-export function formatTokenAmount({
+export function formatAmount({
     amount,
     humanize = true,
 }: {

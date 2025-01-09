@@ -13,6 +13,7 @@ export * from "./components/remote-logo";
 export * from "./components/select";
 export * from "./components/skeleton";
 export * from "./components/slider";
+export * from "./components/step-number-input";
 export * from "./components/switch";
 export * from "./components/tabs";
 export * from "./components/tabs/tab";

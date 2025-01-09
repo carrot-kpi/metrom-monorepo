@@ -3,7 +3,7 @@
 import { Typography, Skeleton, Popover } from "@metrom-xyz/ui";
 import { Status, type Rewards as RewardsType } from "@metrom-xyz/sdk";
 import { SupportedChain } from "@metrom-xyz/contracts";
-import { formatTokenAmount, formatUsdAmount } from "@/src/utils/format";
+import { formatAmount, formatUsdAmount } from "@/src/utils/format";
 import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { RemoteLogo } from "@/src/components/remote-logo";
@@ -73,7 +73,7 @@ export function Rewards({
                                 </div>
                                 <div>
                                     <Typography weight="medium" size="sm">
-                                        {formatTokenAmount({
+                                        {formatAmount({
                                             amount: reward.amount.formatted,
                                         })}
                                     </Typography>
