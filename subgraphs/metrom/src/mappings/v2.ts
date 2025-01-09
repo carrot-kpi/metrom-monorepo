@@ -137,7 +137,7 @@ export function handleCreatePointsCampaign(event: CreatePointsCampaign): void {
     createCampaignEvent.from = event.params.from;
     createCampaignEvent.to = event.params.to;
     createCampaignEvent.kind = BI_1;
-    campaign.data = ethereum.encode(
+    createCampaignEvent.data = ethereum.encode(
         ethereum.Value.fromAddress(event.params.pool),
     )!;
     createCampaignEvent.specificationHash = event.params.specification;
