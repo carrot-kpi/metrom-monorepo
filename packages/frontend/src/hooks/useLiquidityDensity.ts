@@ -1,24 +1,23 @@
 import { type LiquidityDensity } from "@metrom-xyz/sdk";
 import { metromApiClient } from "../commons";
 import { useQuery } from "@tanstack/react-query";
-import { useChainId } from "wagmi";
+import type { SupportedChain } from "@metrom-xyz/contracts";
 import type { Pool } from "../../../sdk/dist/types";
 
 const SURROUNDING_AMOUNT = 200;
 
 export function useLiquidityDensity(
     pool?: Pool,
-    enabled?: boolean,
+    chainId?: SupportedChain,
+    enabled: boolean = true,
 ): {
     loading: boolean;
     liquidityDensity?: LiquidityDensity;
 } {
-    const chainId = useChainId();
-
     const { data, isPending } = useQuery({
         queryKey: ["ticks", chainId, pool],
         queryFn: async ({ queryKey }) => {
-            const chainId = queryKey[1] as number;
+            const chainId = queryKey[1] as SupportedChain;
             if (!chainId) return undefined;
 
             const pool = queryKey[2] as Pool;

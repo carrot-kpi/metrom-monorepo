@@ -1,4 +1,4 @@
-import { NumberInput, type NumberFormatValues } from "@metrom-xyz/ui";
+import { StepNumberInput, type NumberFormatValues } from "@metrom-xyz/ui";
 import { useTranslations } from "next-intl";
 import {
     type PoolWithTvl,
@@ -6,7 +6,7 @@ import {
     priceToTick,
     getTick,
 } from "@metrom-xyz/sdk";
-import { useState } from "react";
+import { useCallback } from "react";
 
 import styles from "./styles.module.css";
 
@@ -18,8 +18,9 @@ export interface RangeBound {
 interface RangeInputsProps {
     pool?: PoolWithTvl;
     error?: boolean;
-    priceFrom?: number;
-    priceTo?: number;
+    from?: number;
+    to?: number;
+    priceStep?: number;
     onFromChange: (value: RangeBound | undefined) => void;
     onToChange: (value: RangeBound | undefined) => void;
 }
@@ -32,79 +33,92 @@ export interface NumberInputValues {
 export function RangeInputs({
     pool,
     error,
-    priceFrom,
-    priceTo,
+    from,
+    to,
+    priceStep,
     onFromChange,
     onToChange,
 }: RangeInputsProps) {
     const t = useTranslations("newCampaign.form.range");
-    const [fromRaw, setFromRaw] = useState<number | undefined>(priceFrom);
-    const [toRaw, setToRaw] = useState<number | undefined>(priceTo);
 
-    function handleFromOnChange(value: NumberFormatValues) {
-        setFromRaw(value.floatValue);
-    }
+    const handleFromOnChange = useCallback(
+        (value: NumberFormatValues) => {
+            if (value.floatValue === undefined || !pool) {
+                onFromChange(undefined);
+                return;
+            }
 
-    function handleToOnChange(value: NumberFormatValues) {
-        setToRaw(value.floatValue);
-    }
+            onFromChange({
+                price: value.floatValue,
+                tick: getTick(value.floatValue, pool),
+            });
+        },
+        [pool, onFromChange],
+    );
 
-    function handleFromBlur() {
-        if (fromRaw === undefined) {
-            onFromChange(undefined);
-            return;
-        }
+    const handleToOnChange = useCallback(
+        (value: NumberFormatValues) => {
+            if (value.floatValue === undefined || !pool) {
+                onToChange(undefined);
+                return;
+            }
 
-        if (!pool) return;
+            onToChange({
+                price: value.floatValue,
+                tick: getTick(value.floatValue, pool),
+            });
+        },
+        [pool, onToChange],
+    );
 
-        const price = tickToPrice(priceToTick(fromRaw));
+    const handleFromOnBlur = useCallback(() => {
+        if (!pool || from === undefined) return;
+
+        const price = tickToPrice(priceToTick(from));
         onFromChange({
             price,
             tick: getTick(price, pool),
         });
-    }
+    }, [from, pool, onFromChange]);
 
-    function handleToBlur() {
-        if (toRaw === undefined) {
-            onToChange(undefined);
-            return;
-        }
+    const handleToOnBlur = useCallback(() => {
+        if (!pool || to === undefined) return;
 
-        if (!pool) return;
-
-        const price = tickToPrice(priceToTick(toRaw));
+        const price = tickToPrice(priceToTick(to));
         onToChange({
             price,
             tick: getTick(price, pool),
         });
-    }
+    }, [to, pool, onToChange]);
 
     // TODO: handle pools with more than 2 tokens (such as stableswap3 pools)
     return (
         <div className={styles.root}>
-            <NumberInput
+            <StepNumberInput
                 label={t("minPrice", {
                     token0: pool?.tokens[0].symbol,
                     token1: pool?.tokens[1].symbol,
                 })}
                 placeholder="0.0"
+                step={priceStep}
                 error={!!error}
                 allowNegative={false}
-                value={priceFrom?.toFixed(4)}
+                value={from?.toString()}
                 onValueChange={handleFromOnChange}
-                onBlur={handleFromBlur}
+                onBlur={handleFromOnBlur}
             />
-            <NumberInput
+            <StepNumberInput
                 label={t("maxPrice", {
                     token0: pool?.tokens[0].symbol,
                     token1: pool?.tokens[1].symbol,
                 })}
                 placeholder="0.0"
+                step={priceStep}
                 error={!!error}
                 allowNegative={false}
-                value={priceTo?.toFixed(4)}
+                value={to?.toString()}
                 onValueChange={handleToOnChange}
-                onBlur={handleToBlur}
+                onBlur={handleToOnBlur}
             />
         </div>
     );

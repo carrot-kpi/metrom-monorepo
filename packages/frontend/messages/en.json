@@ -223,10 +223,15 @@
             "range": {
                 "title": "Set range to reward",
                 "currentPrice": "Current price",
+                "range": {
+                    "label": "Range",
+                    "value": "{lowerPrice} - {upperPrice} {token1} PER {token0}"
+                },
                 "price": "1 {token0} - {price} {token1}",
                 "minPrice": "Min price ({token1} per {token0})",
                 "maxPrice": "Max price ({token1} per {token0})",
                 "apply": "Apply",
+                "chart": "Range visualizer",
                 "errors": {
                     "missing": "Bound missing",
                     "malformed": "Wrong bound values"
@@ -255,6 +260,17 @@
         "tvl": "TVL",
         "apr": "APR",
         "points": "Points",
+        "range": {
+            "title": "Price range",
+            "lowerPrice": {
+                "label": "Lower price",
+                "value": "{price} {token1} PER {token0}"
+            },
+            "upperPrice": {
+                "label": "Upper price",
+                "value": "{price} {token1} PER {token0}"
+            }
+        },
         "kpi": {
             "title": "KPI",
             "simulation": "KPI simulation",
@@ -320,6 +336,18 @@
             "title": "Points",
             "total": "Total",
             "daily": "Daily"
+        },
+        "priceRange": {
+            "title": "Price range",
+            "lowerPrice": {
+                "label": "Lower price",
+                "value": "{price} {token1} PER {token0}"
+            },
+            "upperPrice": {
+                "label": "Upper price",
+                "value": "{price} {token1} PER {token0}"
+            },
+            "chart": "Range visualizer"
         },
         "kpi": {
             "title": "KPI",
@@ -461,7 +489,6 @@
         "apr": "APR"
     },
     "liquidityDensityChart": {
-        "title": "Range visualizer",
         "tooltip": {
             "price": "1 {token0} = {price} {token1}"
         },

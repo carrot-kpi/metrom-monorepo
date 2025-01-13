@@ -1,0 +1,8 @@
+.label {
+    @apply font-sans
+        uppercase
+        text-xs
+        leading-none
+        font-medium
+        fill-black;
+}

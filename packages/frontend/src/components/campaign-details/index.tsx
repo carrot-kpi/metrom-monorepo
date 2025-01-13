@@ -12,6 +12,7 @@ import { Points } from "./points";
 import { Leaderboard } from "./leaderboard";
 import { Kpi } from "./kpi";
 import { PageNotFound } from "../page-not-found";
+import { PriceRange } from "./price-range";
 
 import styles from "./styles.module.css";
 
@@ -49,6 +50,7 @@ export function CampaignDetails({ chain, campaignId }: CampaignDetailsProps) {
                 {campaign && campaign.points && (
                     <Points campaign={campaign} loading={loadingCampaign} />
                 )}
+                <PriceRange campaign={campaign} />
                 <Kpi campaign={campaign} loading={loadingCampaign} />
                 <Leaderboard campaign={campaign} loading={loadingCampaign} />
             </div>

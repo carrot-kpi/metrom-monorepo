@@ -10,11 +10,12 @@ import {
     YAxis,
 } from "recharts";
 import type { CategoricalChartState } from "recharts/types/chart/types";
-import type { LiquidityDensity, Pool } from "@metrom-xyz/sdk";
+import { getPrice, type LiquidityDensity, type Pool } from "@metrom-xyz/sdk";
 import { useMemo, useState } from "react";
 import { TooltipContent } from "./tooltip";
 import { formatUnits } from "viem";
 import classNames from "classnames";
+import { LiquidityBar } from "./liquidity-bar";
 
 import styles from "./styles.module.css";
 
@@ -55,9 +56,18 @@ export function LiquidityDensityChart({
         }));
     }, [liquidityDensity, pool]);
 
+    const currentPrice = useMemo(() => {
+        if (!liquidityDensity || !pool) return null;
+        return getPrice(liquidityDensity.activeIdx, pool);
+    }, [liquidityDensity, pool]);
+
     function handleOnMouseMove(state: CategoricalChartState) {
         if (state.isTooltipActive) setTooltipIndex(state.activeTooltipIndex);
         else setTooltipIndex(undefined);
+    }
+
+    function handleOnMouseLeave() {
+        setTooltipIndex(undefined);
     }
 
     if (loading) {
@@ -123,11 +133,6 @@ export function LiquidityDensityChart({
 
     return (
         <div className={classNames("root", styles.root, className)}>
-            <div className={styles.header}>
-                <Typography weight="medium" light uppercase size="xs">
-                    {t("title")}
-                </Typography>
-            </div>
             <ResponsiveContainer
                 width="100%"
                 className={classNames("container", styles.container, className)}
@@ -135,9 +140,11 @@ export function LiquidityDensityChart({
                 <BarChart
                     data={chartData}
                     onMouseMove={handleOnMouseMove}
+                    onMouseLeave={handleOnMouseLeave}
+                    margin={{ top: 24 }}
                     style={{ cursor: "pointer" }}
                 >
-                    <YAxis hide domain={[0, "auto"]} />
+                    <YAxis hide domain={[0, "dataMax"]} />
                     <XAxis hide dataKey="price0" />
 
                     <Bar
@@ -149,6 +156,8 @@ export function LiquidityDensityChart({
                                 from={from}
                                 to={to}
                                 activeIdx={liquidityDensity.activeIdx}
+                                chartData={chartData}
+                                currentPrice={currentPrice}
                                 tooltipIndex={tooltipIndex}
                             />
                         }
@@ -170,60 +179,3 @@ export function LiquidityDensityChart({
         </div>
     );
 }
-
-interface LiquidityBarProps {
-    index?: number;
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-    from?: number;
-    to?: number;
-    idx?: number;
-    activeIdx?: number;
-    tooltipIndex?: number;
-}
-
-const LiquidityBar = ({
-    index,
-    x,
-    y,
-    width,
-    height,
-    from,
-    to,
-    idx,
-    activeIdx,
-    tooltipIndex,
-}: LiquidityBarProps) => {
-    if (
-        !idx ||
-        width === undefined ||
-        height === undefined ||
-        x === undefined ||
-        y === undefined
-    )
-        return null;
-
-    const inRange =
-        from !== undefined && to !== undefined && idx >= from && idx < to;
-    const fill =
-        idx === activeIdx ? "#6CFF95" : inRange ? "#6CFF9566" : "#E5E7EB";
-
-    let opacity = 1;
-    if (tooltipIndex === index) opacity = 0.65;
-
-    return (
-        <g>
-            <rect
-                x={x}
-                y={y}
-                fill={fill}
-                fillOpacity={opacity}
-                width={width}
-                height={height}
-                rx={4}
-            />
-        </g>
-    );
-};

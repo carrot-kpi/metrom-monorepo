@@ -34,51 +34,44 @@ export function Kpi({ poolUsdTvl, rewards, specification }: KpiProps) {
     } = specification;
 
     return (
-        <div>
-            <div className={styles.root}>
-                <Typography uppercase weight="medium">
-                    {t("title")}
-                </Typography>
-                <div className={styles.header}>
-                    <TextField
-                        boxed
-                        size="xl"
-                        label={t("lowerBound")}
-                        value={formatUsdAmount(lowerUsdTarget)}
-                    />
-                    <TextField
-                        boxed
-                        size="xl"
-                        label={t("upperBound")}
-                        value={formatUsdAmount(upperUsdTarget)}
-                    />
-                    <TextField
-                        boxed
-                        size="xl"
-                        label={t("minimumPayout")}
-                        value={
-                            minimumPayoutPercentage
-                                ? formatPercentage(
-                                      minimumPayoutPercentage * 100,
-                                  )
-                                : "-"
-                        }
-                    />
-                </div>
-                <Accordion
-                    title={t("simulation")}
-                    className={styles.chartWrapper}
-                >
-                    <KpiSimulationChart
-                        tooltipSize="xs"
-                        poolUsdTvl={poolUsdTvl}
-                        totalRewardsUsd={totalRewardsUsdAmount}
-                        lowerUsdTarget={lowerUsdTarget}
-                        upperUsdTarget={upperUsdTarget}
-                        minimumPayoutPercentage={minimumPayoutPercentage}
-                    />
-                </Accordion>
+        <div className={styles.root}>
+            <Typography uppercase weight="medium">
+                {t("title")}
+            </Typography>
+            <div className={styles.header}>
+                <TextField
+                    boxed
+                    size="xl"
+                    label={t("lowerBound")}
+                    value={formatUsdAmount(lowerUsdTarget)}
+                />
+                <TextField
+                    boxed
+                    size="xl"
+                    label={t("upperBound")}
+                    value={formatUsdAmount(upperUsdTarget)}
+                />
+                <TextField
+                    boxed
+                    size="xl"
+                    label={t("minimumPayout")}
+                    value={
+                        minimumPayoutPercentage
+                            ? formatPercentage(minimumPayoutPercentage * 100)
+                            : "-"
+                    }
+                />
             </div>
+            <Accordion title={t("simulation")} className={styles.chartWrapper}>
+                <KpiSimulationChart
+                    tooltipSize="xs"
+                    poolUsdTvl={poolUsdTvl}
+                    totalRewardsUsd={totalRewardsUsdAmount}
+                    lowerUsdTarget={lowerUsdTarget}
+                    upperUsdTarget={upperUsdTarget}
+                    minimumPayoutPercentage={minimumPayoutPercentage}
+                />
+            </Accordion>
         </div>
     );
 }

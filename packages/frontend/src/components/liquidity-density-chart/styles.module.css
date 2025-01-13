@@ -10,7 +10,7 @@
     @apply w-full
         h-full
         px-3
-        min-h-[352px]
+        min-h-[320px]
         flex
         justify-center
         items-center
@@ -54,13 +54,4 @@
         transition-colors
         duration-200
         ease-in-out;
-}
-
-.text {
-    @apply font-sans
-        uppercase
-        text-xs
-        leading-none
-        font-medium
-        fill-black;
 }

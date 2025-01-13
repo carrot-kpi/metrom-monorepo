@@ -524,14 +524,16 @@ export class MetromApiClient {
             Direction.Desc,
         );
 
-        const ticks = averageTicks(previousTicks)
-            .concat({
-                idx: activeTickProcessed.idx,
-                liquidity: activeTickProcessed.liquidity.active,
-                price0: activeTickProcessed.price0,
-                price1: activeTickProcessed.price1,
-            })
-            .concat(averageTicks(subsequentTicks));
+        const ticks = averageTicks(
+            previousTicks
+                .concat({
+                    idx: activeTickProcessed.idx,
+                    liquidity: activeTickProcessed.liquidity.active,
+                    price0: activeTickProcessed.price0,
+                    price1: activeTickProcessed.price1,
+                })
+                .concat(subsequentTicks),
+        );
 
         return {
             activeIdx: activeTick.idx,
@@ -736,10 +738,13 @@ function averageTicks(ticks: Tick[]) {
     ticks.forEach((tick, index) => {
         averageLiquidity += tick.liquidity;
 
-        if ((index + 1) % TICK_AVERAGE_FACTOR === 0) {
+        if (index % TICK_AVERAGE_FACTOR === 0) {
+            const factor = index > 0 ? BigInt(TICK_AVERAGE_FACTOR) : 1n;
+            const liquidity = averageLiquidity / factor;
+
             averagedTicks.push({
                 ...tick,
-                liquidity: averageLiquidity / BigInt(TICK_AVERAGE_FACTOR),
+                liquidity,
             });
             averageLiquidity = 0n;
         }

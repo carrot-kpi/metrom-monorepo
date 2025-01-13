@@ -1,0 +1,22 @@
+.root {
+    @apply flex flex-col gap-4;
+}
+
+.card {
+    @apply w-full
+        flex
+        flex-col
+        gap-4;
+}
+
+.topContent {
+    @apply w-full flex flex-col sm:flex-row gap-4 justify-between;
+}
+
+.chart {
+    @apply w-full flex-[2] flex flex-col items-stretch bg-white rounded-2xl p-4;
+}
+
+.chartWrapper {
+    @apply w-full flex-1 mt-4;
+}

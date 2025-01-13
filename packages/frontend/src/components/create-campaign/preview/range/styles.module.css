@@ -2,10 +2,6 @@
     @apply flex flex-col gap-4;
 }
 
-.header {
+.fields {
     @apply flex flex-wrap sm:flex-nowrap gap-4;
-}
-
-.chartWrapper :global(.content) {
-    @apply px-3;
 }

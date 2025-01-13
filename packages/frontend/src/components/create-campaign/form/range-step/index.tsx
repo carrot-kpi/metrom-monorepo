@@ -27,6 +27,8 @@ import { formatAmount } from "@/src/utils/format";
 
 import styles from "./styles.module.css";
 
+const PRICE_STEP_FACTOR = 0.01;
+
 interface RangeStepProps {
     disabled?: boolean;
     pool?: PoolWithTvl;
@@ -58,7 +60,7 @@ export function RangeStep({
     const prevRangeSpecification = usePrevious(rangeSpecification);
     const chainId = useChainId();
     const { liquidityDensity, loading: loadingLiquidityDensity } =
-        useLiquidityDensity(pool, enabled);
+        useLiquidityDensity(pool, chainId, enabled);
 
     const unsavedChanges = useMemo(() => {
         return (
@@ -67,6 +69,11 @@ export function RangeStep({
             prevRangeSpecification.to !== to
         );
     }, [from, prevRangeSpecification, to]);
+
+    const priceStep = useMemo(() => {
+        if (!liquidityDensity || !pool) return undefined;
+        return getPrice(liquidityDensity.activeIdx, pool) * PRICE_STEP_FACTOR;
+    }, [liquidityDensity, pool]);
 
     useEffect(() => {
         setOpen(false);
@@ -186,24 +193,56 @@ export function RangeStep({
                 }}
             >
                 <div className={styles.priceWrapper}>
-                    <Typography uppercase weight="medium" light size="sm">
-                        {t("currentPrice")}
-                    </Typography>
-                    {!liquidityDensity || !pool || loadingLiquidityDensity ? (
-                        <Skeleton size="sm" width={50} />
+                    {open ||
+                    from?.price === undefined ||
+                    to?.price === undefined ? (
+                        <>
+                            <Typography
+                                uppercase
+                                weight="medium"
+                                light
+                                size="sm"
+                            >
+                                {t("currentPrice")}
+                            </Typography>
+                            {!liquidityDensity ||
+                            !pool ||
+                            loadingLiquidityDensity ? (
+                                <Skeleton size="sm" width={50} />
+                            ) : (
+                                <Typography weight="medium" size="sm">
+                                    {t("price", {
+                                        token0: pool?.tokens[0].symbol,
+                                        token1: pool?.tokens[1].symbol,
+                                        price: formatAmount({
+                                            amount: getPrice(
+                                                liquidityDensity.activeIdx,
+                                                pool,
+                                            ),
+                                        }),
+                                    })}
+                                </Typography>
+                            )}
+                        </>
                     ) : (
-                        <Typography weight="medium" size="sm">
-                            {t("price", {
-                                token0: pool?.tokens[0].symbol,
-                                token1: pool?.tokens[1].symbol,
-                                price: formatAmount({
-                                    amount: getPrice(
-                                        liquidityDensity.activeIdx,
-                                        pool,
-                                    ),
-                                }),
-                            })}
-                        </Typography>
+                        <>
+                            <Typography
+                                uppercase
+                                weight="medium"
+                                light
+                                size="sm"
+                            >
+                                {t("range.label")}
+                            </Typography>
+                            <Typography weight="medium" size="sm">
+                                {t("range.value", {
+                                    token0: pool?.tokens[0].symbol,
+                                    token1: pool?.tokens[1].symbol,
+                                    lowerPrice: from?.price.toFixed(4),
+                                    upperPrice: to?.price.toFixed(4),
+                                })}
+                            </Typography>
+                        </>
                     )}
                 </div>
             </StepPreview>
@@ -212,19 +251,25 @@ export function RangeStep({
                     <RangeInputs
                         pool={pool}
                         error={!!error}
-                        priceFrom={from?.price}
-                        priceTo={to?.price}
+                        priceStep={priceStep}
+                        from={from?.price}
+                        to={to?.price}
                         onFromChange={setFrom}
                         onToChange={setTo}
                     />
-                    <LiquidityDensityChart
-                        error={!!error}
-                        loading={loadingLiquidityDensity}
-                        from={from?.tick}
-                        to={to?.tick}
-                        pool={pool}
-                        liquidityDensity={liquidityDensity}
-                    />
+                    <div>
+                        <Typography weight="medium" light uppercase size="xs">
+                            {t("chart")}
+                        </Typography>
+                        <LiquidityDensityChart
+                            error={!!error}
+                            loading={loadingLiquidityDensity}
+                            from={from?.tick}
+                            to={to?.tick}
+                            pool={pool}
+                            liquidityDensity={liquidityDensity}
+                        />
+                    </div>
                     <Button
                         variant="secondary"
                         size="sm"

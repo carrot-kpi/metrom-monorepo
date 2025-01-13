@@ -34,6 +34,7 @@ import {
 import { ENVIRONMENT } from "@/src/commons/env";
 import { Kpi } from "./kpi";
 import { AprChip } from "../../apr-chip";
+import { Range } from "./range";
 
 import styles from "./styles.module.css";
 
@@ -277,6 +278,12 @@ export function CampaignPreview({
                     onBack={onBack}
                 />
                 <div className={styles.content}>
+                    {!!payload.rangeSpecification && (
+                        <Range
+                            pool={payload.pool}
+                            specification={payload.rangeSpecification}
+                        />
+                    )}
                     {!!payload.kpiSpecification && (
                         <Kpi
                             poolUsdTvl={payload.pool?.usdTvl}
