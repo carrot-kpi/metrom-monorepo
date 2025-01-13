@@ -18,6 +18,6 @@
     @apply hidden sm:flex;
 }
 
-.kpi {
+.chip {
     @apply bg-gray-100 rounded-lg ml-2 py-1 px-1.5 w-fit;
 }

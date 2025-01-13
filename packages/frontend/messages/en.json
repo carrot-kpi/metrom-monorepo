@@ -52,7 +52,8 @@
             "rewards": "Daily rewards"
         },
         "pool": {
-            "kpi": "KPI"
+            "kpi": "KPI",
+            "range": "Range"
         },
         "status": {
             "live": {
