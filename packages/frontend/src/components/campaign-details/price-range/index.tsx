@@ -1,4 +1,4 @@
-import { getTick } from "@metrom-xyz/sdk";
+import { getPrice } from "@metrom-xyz/sdk";
 import type { NamedCampaign } from "@/src/hooks/useCampaigns";
 import { useTranslations } from "next-intl";
 import { TextField, Typography } from "@metrom-xyz/ui";
@@ -38,7 +38,10 @@ export function PriceRange({ campaign }: PriceRangeProps) {
                             token0: campaign.pool.tokens[0].symbol,
                             token1: campaign.pool.tokens[1].symbol,
                             price: formatAmount({
-                                amount: priceRange.from,
+                                amount: getPrice(
+                                    priceRange.from,
+                                    campaign.pool,
+                                ),
                             }),
                         })}
                     />
@@ -50,7 +53,7 @@ export function PriceRange({ campaign }: PriceRangeProps) {
                             token0: campaign.pool.tokens[0].symbol,
                             token1: campaign.pool.tokens[1].symbol,
                             price: formatAmount({
-                                amount: priceRange.to,
+                                amount: getPrice(priceRange.to, campaign.pool),
                             }),
                         })}
                     />
@@ -62,8 +65,8 @@ export function PriceRange({ campaign }: PriceRangeProps) {
                     <div className={classNames(styles.chartWrapper)}>
                         <LiquidityDensityChart
                             pool={campaign.pool}
-                            from={getTick(priceRange.from, campaign.pool)}
-                            to={getTick(priceRange.to, campaign.pool)}
+                            from={priceRange.from}
+                            to={priceRange.to}
                             liquidityDensity={liquidityDensity}
                             loading={loadingLiquidityDensity}
                         />

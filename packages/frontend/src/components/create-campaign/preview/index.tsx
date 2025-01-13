@@ -171,8 +171,8 @@ export function CampaignPreview({
 
             if (rangeSpecification)
                 specification.priceRange = {
-                    from: rangeSpecification.from.price,
-                    to: rangeSpecification.to.price,
+                    from: rangeSpecification.from.tick,
+                    to: rangeSpecification.to.tick,
                 };
 
             if (restrictions)
