@@ -41,7 +41,7 @@ export function Dex({ chain, slug }: DexProps) {
                 placement="top"
             >
                 <div className={styles.dexDetailsContainer}>
-                    <Typography weight="medium" size="sm" uppercase>
+                    <Typography weight="medium" size="sm">
                         {dex.name}
                     </Typography>
                 </div>

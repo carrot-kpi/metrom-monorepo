@@ -34,7 +34,7 @@ export function Chain({ id }: ChainProps) {
                 placement="top"
             >
                 <div className={styles.chainNameContainer}>
-                    <Typography weight="medium" size="sm" uppercase>
+                    <Typography weight="medium" size="sm">
                         {chainData?.name}
                     </Typography>
                 </div>

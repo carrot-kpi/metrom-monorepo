@@ -1,5 +1,5 @@
 .root {
-    @apply max-w-screen-lg w-full flex flex-col px-5;
+    @apply max-w-screen-xl w-full flex flex-col px-5;
 }
 
 .filters {
@@ -19,7 +19,7 @@
 }
 
 .row {
-    @apply grid grid-cols-12 sm:grid-cols-campaigns-table gap-5 px-2 sm:px-6 items-center;
+    @apply grid grid-cols-12 sm:grid-cols-campaigns-table gap-5 px-2 sm:px-7 items-center;
 }
 
 .header {
@@ -27,7 +27,7 @@
 }
 
 .body {
-    @apply w-full sm:h-[780px] mt-4 flex flex-col gap-2 mb-7;
+    @apply bg-white w-full sm:h-[720px] mt-4 flex flex-col mb-7 rounded-xl overflow-hidden;
 }
 
 .empty {
