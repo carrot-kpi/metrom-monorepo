@@ -12,6 +12,7 @@ import { trackFathomEvent } from "@/src/utils/fathom";
 import { PoolRemoteLogo } from "../../pool-remote-logo";
 import { AprChip } from "../../apr-chip";
 import type { NamedCampaign } from "@/src/hooks/useCampaigns";
+import { CampaignType } from "@metrom-xyz/sdk";
 
 import styles from "./styles.module.css";
 
@@ -27,15 +28,8 @@ export function Header({ campaign }: HeaderProps) {
         router.push("/claims");
     }, [router]);
 
-    const depositLink = getPoolAddLiquidityLink(
-        campaign.chainId,
-        campaign.pool.dex,
-        campaign.pool,
-    );
-    const explorerLink = getAddressExplorerLink(
-        campaign.pool.address,
-        campaign.chainId,
-    );
+    const depositLink = getPoolAddLiquidityLink(campaign);
+    const explorerLink = getAddressExplorerLink(campaign);
 
     function handleAddLiquidityOnClick() {
         trackFathomEvent("CLICK_POOL_DEPOSIT");
@@ -45,6 +39,9 @@ export function Header({ campaign }: HeaderProps) {
         trackFathomEvent("CLICK_DEX_EXPLORE");
     }
 
+    // TODO: implement header for different campaign types
+    if (campaign.type !== CampaignType.AmmPoolLiquidity) return null;
+
     return (
         <div className={styles.root}>
             <div className={styles.titleContainer}>
@@ -52,7 +49,7 @@ export function Header({ campaign }: HeaderProps) {
                     <PoolRemoteLogo
                         chain={campaign.chainId}
                         size="xl"
-                        tokens={campaign.pool.tokens.map((token) => ({
+                        tokens={campaign.target.tokens.map((token) => ({
                             address: token.address,
                             defaultText: token.symbol,
                         }))}
@@ -60,9 +57,9 @@ export function Header({ campaign }: HeaderProps) {
                     <Typography size="xl4" weight="medium">
                         {campaign.name}
                     </Typography>
-                    {campaign.pool.fee && (
+                    {campaign.target.fee && (
                         <Typography size="lg" weight="medium" light>
-                            {formatPercentage(campaign.pool.fee)}
+                            {formatPercentage(campaign.target.fee)}
                         </Typography>
                     )}
                 </div>

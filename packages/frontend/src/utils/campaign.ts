@@ -1,4 +1,4 @@
-import type { Campaign } from "@metrom-xyz/sdk";
+import { CampaignType, type Campaign } from "@metrom-xyz/sdk";
 import { CHAIN_DATA } from "../commons";
 import type { CampaignPayload } from "../types";
 
@@ -13,11 +13,17 @@ const SUPPORTED_DEX_SLUG_TO_NAME = Object.values(CHAIN_DATA).reduce(
 );
 
 export const getCampaignName = (campaign: Campaign) => {
-    return `${SUPPORTED_DEX_SLUG_TO_NAME[campaign.pool.dex] || "-"} ${getCampaigPoolName(campaign)}`;
+    // TODO: handle other campaign types
+    if (campaign.type === CampaignType.AmmPoolLiquidity)
+        return `${SUPPORTED_DEX_SLUG_TO_NAME[campaign.target.dex] || "-"} ${getCampaigPoolName(campaign)}`;
+    return "";
 };
 
 export const getCampaigPoolName = (campaign: Campaign) => {
-    return `${campaign.pool.tokens.map((token) => token.symbol).join(" / ")}`;
+    // TODO: handle other campaign types
+    if (campaign.type === CampaignType.AmmPoolLiquidity)
+        return `${campaign.target.tokens.map((token) => token.symbol).join(" / ")}`;
+    return "";
 };
 
 export const getCampaignPreviewApr = (campaign: CampaignPayload) => {

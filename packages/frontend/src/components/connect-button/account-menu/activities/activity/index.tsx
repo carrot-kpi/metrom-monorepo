@@ -1,6 +1,6 @@
 import { ClaimReward } from "@/src/assets/claim-reward";
 import { NewCampaignIcon } from "@/src/assets/new-campaign-icon";
-import type { Activity } from "@metrom-xyz/sdk";
+import { type Activity, CampaignType } from "@metrom-xyz/sdk";
 import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
 import { Typography, Skeleton } from "@metrom-xyz/ui";
@@ -45,7 +45,11 @@ export function Activity({ chainId, transaction, payload }: ActivityProps) {
                   title: t("claimReward"),
               };
 
-    const dex = dexes.find((dex) => dex.slug === campaign?.pool.dex);
+    const dex = dexes.find((dex) => {
+        // FIXME: better way to handle this
+        if (campaign?.type === CampaignType.AmmPoolLiquidity)
+            return dex.slug === campaign?.target.dex;
+    });
     const DexLogo = dex?.logo;
 
     function handleActivityOnClick() {
@@ -88,16 +92,20 @@ export function Activity({ chainId, transaction, payload }: ActivityProps) {
                                                 className={styles.dexIcon}
                                             />
                                         )}
-                                        <PoolRemoteLogo
-                                            size="sm"
-                                            chain={campaign.chainId}
-                                            tokens={campaign.pool.tokens.map(
-                                                (token) => ({
-                                                    address: token.address,
-                                                    defaultText: token.symbol,
-                                                }),
-                                            )}
-                                        />
+                                        {campaign.type ===
+                                            CampaignType.AmmPoolLiquidity && (
+                                            <PoolRemoteLogo
+                                                size="sm"
+                                                chain={campaign.chainId}
+                                                tokens={campaign.target.tokens.map(
+                                                    (token) => ({
+                                                        address: token.address,
+                                                        defaultText:
+                                                            token.symbol,
+                                                    }),
+                                                )}
+                                            />
+                                        )}
                                         <Typography
                                             className={styles.seeCampaignLink}
                                             weight="medium"

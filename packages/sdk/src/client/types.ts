@@ -1,4 +1,5 @@
 import type {
+    CampaignType,
     Erc20Token,
     Pool,
     PoolWithTvl,
@@ -16,19 +17,34 @@ export type BackendPool = Omit<Pool, "chainId">;
 
 export type BackendPoolWithTvl = Omit<PoolWithTvl, "chainId">;
 
-export interface BackendCampaign {
+// TODO: complete the type definition
+export interface BackendLiquidityDebt {
+    brand: string;
+    usdDebt: number;
+}
+
+export interface BackendCampaignBase {
     chainId: number;
     id: Hex;
     from: number;
     to: number;
     createdAt: number;
     snapshottedAt: number | null;
-    pool: BackendPoolWithTvl;
     specification: Specification | null;
     rewards?: BackendReward[];
     points: string | null;
     apr: number | null;
 }
+
+export type BackendCampaign =
+    | (BackendCampaignBase & {
+          type: CampaignType.AmmPoolLiquidity;
+          target: BackendPoolWithTvl;
+      })
+    | (BackendCampaignBase & {
+          type: CampaignType.LiquidityDebt;
+          target: BackendLiquidityDebt;
+      });
 
 export interface BackendClaim {
     chainId: number;

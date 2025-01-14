@@ -3,9 +3,9 @@ import { type Campaign } from "@metrom-xyz/sdk";
 import { getCampaignName } from "../utils/campaign";
 import { useQuery } from "@tanstack/react-query";
 
-export interface NamedCampaign extends Campaign {
+export type NamedCampaign = Campaign & {
     name: string;
-}
+};
 
 export function useCampaigns(): {
     loading: boolean;
