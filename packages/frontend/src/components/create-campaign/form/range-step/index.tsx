@@ -70,10 +70,15 @@ export function RangeStep({
         );
     }, [from, prevRangeSpecification, to]);
 
-    const priceStep = useMemo(() => {
+    const currentPrice = useMemo(() => {
         if (!liquidityDensity || !pool) return undefined;
-        return getPrice(liquidityDensity.activeIdx, pool) * PRICE_STEP_FACTOR;
+        return getPrice(liquidityDensity.activeIdx, pool);
     }, [liquidityDensity, pool]);
+
+    const priceStep = useMemo(() => {
+        if (!currentPrice) return undefined;
+        return currentPrice * PRICE_STEP_FACTOR;
+    }, [currentPrice]);
 
     useEffect(() => {
         setOpen(false);
@@ -215,10 +220,7 @@ export function RangeStep({
                                         token0: pool?.tokens[0].symbol,
                                         token1: pool?.tokens[1].symbol,
                                         price: formatAmount({
-                                            amount: getPrice(
-                                                liquidityDensity.activeIdx,
-                                                pool,
-                                            ),
+                                            amount: currentPrice,
                                         }),
                                     })}
                                 </Typography>
@@ -251,6 +253,7 @@ export function RangeStep({
                     <RangeInputs
                         pool={pool}
                         error={!!error}
+                        currentPrice={currentPrice}
                         priceStep={priceStep}
                         from={from?.price}
                         to={to?.price}

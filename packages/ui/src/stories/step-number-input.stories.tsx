@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { StepNumberInput } from "../components/step-number-input";
 import { useState } from "@storybook/preview-api";
-import { type NumberFormatValues } from "react-number-format";
 
 const meta: Meta = {
     title: "Input/Step number",
@@ -13,7 +12,7 @@ const meta: Meta = {
     args: {
         label: "Step number input",
         placeholder: "Placeholder",
-        onValueChange: () => {},
+        onChange: () => {},
     },
     argTypes: {
         step: {
@@ -27,12 +26,20 @@ type Story = StoryObj<typeof StepNumberInput>;
 
 export const Base: Story = {
     render: (args) => {
-        const [value, setValue] = useState<NumberFormatValues | undefined>(
-            undefined,
-        );
+        const [value, setValue] = useState<number | undefined>(undefined);
 
-        function handleOnChange(value: NumberFormatValues) {
+        function handleOnChange(value: number | undefined) {
             setValue(value);
+        }
+
+        function handleOnIncrement() {
+            if (!value) return;
+            setValue(value + 3);
+        }
+
+        function handleOnDecrement() {
+            if (!value) return;
+            setValue(value - 3);
         }
 
         return (
@@ -40,9 +47,10 @@ export const Base: Story = {
                 {...args}
                 prefix="$"
                 placeholder="$0"
-                forceStep
-                value={value?.formattedValue}
-                onValueChange={handleOnChange}
+                value={value}
+                onChange={handleOnChange}
+                onIncrement={handleOnIncrement}
+                onDecrement={handleOnDecrement}
             />
         );
     },
