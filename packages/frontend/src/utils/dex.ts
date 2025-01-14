@@ -36,16 +36,16 @@ export function getPoolAddLiquidityLink(
     return dex.addLiquidityUrl.replace("{target_pool}", `${target.address}`);
 }
 
-export function getAddressExplorerLink(campaign: Campaign): string | undefined {
-    if (campaign.type !== CampaignType.AmmPoolLiquidity) return undefined;
-
-    const { chainId, target } = campaign;
+export function getAddressExplorerLink(
+    address: Address,
+    chainId?: SupportedChain,
+): string | undefined {
     if (!chainId) return;
 
     const explorer = CHAIN_DATA[chainId].blockExplorers?.default;
     if (!explorer) return;
 
-    return `${explorer.url}/address/${target.address}`;
+    return `${explorer.url}/address/${address}`;
 }
 
 export function getTxExplorerLink(

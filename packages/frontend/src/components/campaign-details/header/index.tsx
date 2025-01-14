@@ -29,7 +29,9 @@ export function Header({ campaign }: HeaderProps) {
     }, [router]);
 
     const depositLink = getPoolAddLiquidityLink(campaign);
-    const explorerLink = getAddressExplorerLink(campaign);
+    const explorerLink =
+        campaign.type === CampaignType.AmmPoolLiquidity &&
+        getAddressExplorerLink(campaign.target.address, campaign.chainId);
 
     function handleAddLiquidityOnClick() {
         trackFathomEvent("CLICK_POOL_DEPOSIT");
