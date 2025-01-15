@@ -259,8 +259,14 @@
         },
         "deploy": "Launch campaign",
         "connectWallet": "Connect wallet",
-        "congratulations": "Congratulations!",
-        "launched": "Campaign successfully launched!",
+        "congratulations": "Congratulations",
+        "launched": {
+            "standard": "The campaign was successfully created.",
+            "safe": {
+                "1": "The campaign creation transactions bundle is now ready to be signed.",
+                "2": "Please collect signatures and execute it before the campaign start date."
+            }
+        },
         "allCampaigns": "All campaigns",
         "newCampaign": "New campaign"
     },
@@ -444,5 +450,11 @@
     "apr": {
         "upTo": "up to",
         "apr": "APR"
+    },
+    "notifications": {
+        "safe": {
+            "title": "Safe connected",
+            "content": "Please notify the wallet participants to sign transactions."
+        }
     }
 }

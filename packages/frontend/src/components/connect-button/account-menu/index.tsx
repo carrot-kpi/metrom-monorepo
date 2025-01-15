@@ -10,6 +10,8 @@ import { useDisconnect } from "wagmi";
 import { useTranslations } from "next-intl";
 import { TickIcon } from "@/src/assets/tick-icon";
 import { LinkIcon } from "@/src/assets/link-icon";
+import { SAFE } from "@/src/commons/env";
+import { SafeLogo } from "@/src/assets/logos/safe";
 
 import styles from "./styles.module.css";
 
@@ -69,10 +71,6 @@ export function AccountMenu({
         setTab(Tab.Activity);
     }
 
-    function handleCampaignsClick() {
-        setTab(Tab.Campaigns);
-    }
-
     useEffect(() => {
         if (!copied) return;
 
@@ -90,12 +88,23 @@ export function AccountMenu({
                     })}
                     onClick={handleCopyClick}
                 >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                        alt="Avatar"
-                        src={account.ensAvatar || blockie}
-                        className={styles.avatar}
-                    />
+                    {SAFE ? (
+                        <div
+                            className={classNames(
+                                styles.avatar,
+                                styles.safeAvatar,
+                            )}
+                        >
+                            <SafeLogo className={styles.safeLogo} />
+                        </div>
+                    ) : (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                            alt="Avatar"
+                            src={account.ensAvatar || blockie}
+                            className={styles.avatar}
+                        />
+                    )}
                     <Typography size="lg" weight="medium">
                         {shortenAddress(account.address as Address)}
                     </Typography>
@@ -107,10 +116,12 @@ export function AccountMenu({
                         )}
                     </div>
                 </div>
-                <Disconnect
-                    className={styles.disconnectIcon}
-                    onClick={handleDisconnect}
-                />
+                {!SAFE && (
+                    <Disconnect
+                        className={styles.disconnectIcon}
+                        onClick={handleDisconnect}
+                    />
+                )}
             </div>
             <div className={styles.tabs}>
                 <div

@@ -26,16 +26,20 @@ import {
     formatUnits,
     encodeAbiParameters,
 } from "viem";
+import { encodeFunctionData } from "viem/utils";
 import {
     SERVICE_URLS,
     type Specification,
     type WhitelistedErc20TokenAmount,
 } from "@metrom-xyz/sdk";
-import { ENVIRONMENT, KPI } from "@/src/commons/env";
+import { ENVIRONMENT, KPI, SAFE } from "@/src/commons/env";
+import SafeAppsSdk, { type BaseTransaction } from "@safe-global/safe-apps-sdk";
 import { Kpi } from "./kpi";
 import { AprChip } from "../../apr-chip";
 
 import styles from "./styles.module.css";
+
+const safeSdk = new SafeAppsSdk();
 
 interface CampaignPreviewProps {
     malformedPayload: boolean;
@@ -51,19 +55,21 @@ export function CampaignPreview({
     onCreateNew,
 }: CampaignPreviewProps) {
     const t = useTranslations("campaignPreview");
+    const router = useRouter();
+    const chainId = useChainId();
+    const chainData = useChainData(chainId);
+    const publicClient = usePublicClient();
+    const { writeContractAsync } = useWriteContract();
+
+    const feedback = useRef<HTMLDivElement>(null);
+
     const [deploying, setDeploying] = useState(false);
     const [uploadingSpecification, setUploadingSpecification] = useState(false);
     const [created, setCreated] = useState(false);
     const [tokensApproved, setTokensApproved] = useState(false);
     const [specificationHash, setSpecificationHash] = useState<Hex>(zeroHash);
     const [error, setError] = useState("");
-
-    const feedback = useRef<HTMLDivElement>(null);
-    const router = useRouter();
-    const chainId = useChainId();
-    const chainData = useChainData(chainId);
-    const publicClient = usePublicClient();
-    const { writeContractAsync } = useWriteContract();
+    const [safeTxs, setSafeTxs] = useState<BaseTransaction[]>([]);
 
     const tokensToApprove = useMemo(() => {
         if (payload.rewardType === RewardType.tokens) return payload.tokens;
@@ -151,6 +157,7 @@ export function CampaignPreview({
         args: [tokensCampaignArgs, pointsCampaignArgs],
         query: {
             enabled:
+                !SAFE &&
                 !malformedPayload &&
                 (tokensCampaignArgs.length > 0 ||
                     pointsCampaignArgs.length > 0),
@@ -208,11 +215,18 @@ export function CampaignPreview({
         tokensApproved,
     ]);
 
+    const handleSafeTransaction = useCallback(
+        (tx: BaseTransaction) => {
+            setSafeTxs([...safeTxs, tx]);
+        },
+        [safeTxs],
+    );
+
     function handleOnRewardsApproved() {
         setTokensApproved(true);
     }
 
-    const handleOnDeploy = useCallback(() => {
+    const handleStandardDeploy = useCallback(() => {
         if (simulateCreateErrored) {
             console.warn(
                 `Could not deploy the campaign: ${simulateCreateError}`,
@@ -239,7 +253,7 @@ export function CampaignPreview({
                 setCreated(true);
                 trackFathomEvent("CLICK_DEPLOY_CAMPAIGN");
             } catch (error) {
-                console.warn("could not create kpi token", error);
+                console.warn("Could not create campaign", error);
             } finally {
                 setDeploying(false);
             }
@@ -249,8 +263,59 @@ export function CampaignPreview({
         publicClient,
         simulateCreateError,
         simulateCreateErrored,
-        simulatedCreate,
+        simulatedCreate?.request,
         writeContractAsync,
+    ]);
+
+    const handleSafeDeploy = useCallback(() => {
+        if (
+            !chainData?.metromContract.address ||
+            !payload.pool ||
+            !payload.startDate ||
+            !payload.endDate ||
+            (payload.tokens?.length === 0 && payload.points === undefined)
+        ) {
+            console.warn(
+                "Missing parameters to deploy campaign through Safe: aborting",
+            );
+            return;
+        }
+
+        safeTxs.push({
+            to: chainData.metromContract.address,
+            data: encodeFunctionData({
+                abi: metromAbi,
+                functionName: "createCampaigns",
+                args: [tokensCampaignArgs, pointsCampaignArgs],
+            }),
+            value: "0",
+        });
+
+        const create = async () => {
+            setDeploying(true);
+            try {
+                await safeSdk.txs.send({ txs: safeTxs });
+
+                setCreated(true);
+                trackFathomEvent("CLICK_DEPLOY_CAMPAIGN");
+            } catch (error) {
+                console.warn("Could not create campaign", error);
+            } finally {
+                setDeploying(false);
+            }
+        };
+
+        void create();
+    }, [
+        chainData,
+        payload.pool,
+        payload.startDate,
+        payload.endDate,
+        payload.tokens?.length,
+        payload.points,
+        safeTxs,
+        tokensCampaignArgs,
+        pointsCampaignArgs,
     ]);
 
     function handleGoToAllCampaigns() {
@@ -334,7 +399,11 @@ export function CampaignPreview({
                                     deploying
                                 }
                                 className={{ root: styles.deployButton }}
-                                onClick={handleOnDeploy}
+                                onClick={
+                                    SAFE
+                                        ? handleSafeDeploy
+                                        : handleStandardDeploy
+                                }
                             >
                                 {t("deploy")}
                             </Button>
@@ -343,6 +412,7 @@ export function CampaignPreview({
                             malformedPayload={malformedPayload}
                             tokens={tokensToApprove}
                             onApproved={handleOnRewardsApproved}
+                            onSafeTx={handleSafeTransaction}
                         />
                     </div>
                 </div>
@@ -357,8 +427,13 @@ export function CampaignPreview({
                 {t("congratulations")}
             </Typography>
             <Typography size="xl2" weight="medium">
-                {t("launched")}
+                {SAFE ? t("launched.safe.1") : t("launched.standard")}
             </Typography>
+            {SAFE && (
+                <Typography size="xl2" weight="medium">
+                    {t("launched.safe.2")}
+                </Typography>
+            )}
             <div className={styles.feedbackActionsContainer}>
                 <Button
                     onClick={handleGoToAllCampaigns}

@@ -36,6 +36,14 @@
     @apply w-12 h-12 rounded-full;
 }
 
+.safeAvatar {
+    @apply bg-safe-brand flex items-center justify-center;
+}
+
+.safeLogo {
+    @apply w-6 h-6;
+}
+
 .disconnectIcon {
     @apply w-5 h-5 cursor-pointer;
 }

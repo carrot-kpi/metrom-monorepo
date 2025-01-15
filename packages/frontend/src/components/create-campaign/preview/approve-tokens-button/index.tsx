@@ -7,6 +7,7 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useCallback, useEffect, useState } from "react";
 import { ApproveTokens } from "./approve-tokens";
 import { useChainData } from "@/src/hooks/useChainData";
+import type { BaseTransaction } from "@safe-global/safe-apps-sdk";
 import type { WhitelistedErc20TokenAmount } from "@metrom-xyz/sdk";
 
 import styles from "./styles.module.css";
@@ -15,12 +16,14 @@ interface ApproveTokensButtonProps {
     malformedPayload: boolean;
     tokens?: WhitelistedErc20TokenAmount[];
     onApproved: () => void;
+    onSafeTx: (tx: BaseTransaction) => void;
 }
 
 export function ApproveTokensButton({
     malformedPayload,
     tokens,
     onApproved,
+    onSafeTx,
 }: ApproveTokensButtonProps) {
     const t = useTranslations("campaignPreview");
     const [approved, setApproved] = useState(false);
@@ -62,6 +65,7 @@ export function ApproveTokensButton({
                 disabled={malformedPayload}
                 rewards={tokens}
                 spender={chainData?.metromContract.address}
+                onSafeTx={onSafeTx}
             />
         );
 

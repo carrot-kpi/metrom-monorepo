@@ -1,18 +1,30 @@
 import { ConnectButton as RainbowConnectButton } from "@rainbow-me/rainbowkit";
 import { Typography, Button, Popover } from "@metrom-xyz/ui";
 import type { SupportedChain } from "@metrom-xyz/contracts";
-import { useRef, useState } from "react";
-import { useChainId, useChains, useSwitchChain } from "wagmi";
 import { useClickAway, useWindowSize } from "react-use";
+import { useRef, useState, useEffect } from "react";
+import {
+    useChainId,
+    useChains,
+    useSwitchChain,
+    useConnectors,
+    useConnect,
+    useAccount,
+    useDisconnect,
+} from "wagmi";
 import { useTranslations } from "next-intl";
 import { ErrorIcon } from "@/src/assets/error-icon";
 import { blo, type Address } from "blo";
 import { AccountMenu } from "./account-menu";
 import { zeroAddress } from "viem";
 import classNames from "classnames";
-import { CHAIN_DATA } from "@/src/commons";
+import { CHAIN_DATA, SAFE_CONNECTOR_ID } from "@/src/commons";
 import { trackFathomEvent } from "@/src/utils/fathom";
 import { useTransition, animated, easings } from "@react-spring/web";
+import { SafeLogo } from "@/src/assets/logos/safe";
+import { SAFE } from "@/src/commons/env";
+import { toast } from "sonner";
+import { SafeConnectedNotification } from "./safe-connected-notification";
 
 import styles from "./styles.module.css";
 
@@ -22,6 +34,10 @@ export function ConnectButton() {
     const currentChainId = useChainId();
     const { switchChain } = useSwitchChain();
     const { width } = useWindowSize();
+    const connectors = useConnectors();
+    const { connector } = useAccount();
+    const { connect } = useConnect();
+    const { disconnect } = useDisconnect();
 
     const [networkWrapper, setNetworkWrapper] = useState<HTMLDivElement | null>(
         null,
@@ -44,6 +60,32 @@ export function ConnectButton() {
         config: { duration: 200, easing: easings.easeInOutCubic },
     });
 
+    useEffect(() => {
+        if (!SAFE) return;
+
+        const safeConnector = connectors.find(
+            (connector) => connector.id === SAFE_CONNECTOR_ID,
+        );
+        if (!safeConnector) return;
+
+        if (connector?.id !== SAFE_CONNECTOR_ID) disconnect();
+
+        connect(
+            { connector: safeConnector },
+            {
+                onSuccess: () =>
+                    toast.custom((toastId) => (
+                        <SafeConnectedNotification toastId={toastId} />
+                    )),
+                onError: (error) => {
+                    console.warn(
+                        `Could not connect with Safe connector: ${error}`,
+                    );
+                },
+            },
+        );
+    }, [connect, connector?.id, connectors, disconnect]);
+
     function handleOpenNetworkPopover() {
         setNetworkPopoverOpen((prev) => !prev);
     }
@@ -54,7 +96,14 @@ export function ConnectButton() {
 
     function getSwitchChainHandler(chainId: number) {
         return () => {
-            switchChain({ chainId });
+            switchChain(
+                { chainId },
+                {
+                    onError: (err) => {
+                        console.error(`Could not switch chain: ${err}`);
+                    },
+                },
+            );
             setNetworkPopoverOpen(false);
         };
     }
@@ -204,17 +253,31 @@ export function ConnectButton() {
                                         onClick={handleAccountMenuOpen}
                                     >
                                         <div className={styles.account}>
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img
-                                                alt="Avatar"
-                                                src={
-                                                    account.ensAvatar || blockie
-                                                }
-                                                className={styles.avatar}
-                                            />
-                                            <Typography
-                                                className={styles.displayName}
-                                            >
+                                            {SAFE ? (
+                                                <div
+                                                    className={classNames(
+                                                        styles.avatar,
+                                                        styles.safeAvatar,
+                                                    )}
+                                                >
+                                                    <SafeLogo
+                                                        className={
+                                                            styles.safeLogo
+                                                        }
+                                                    />
+                                                </div>
+                                            ) : (
+                                                // eslint-disable-next-line @next/next/no-img-element
+                                                <img
+                                                    alt="Avatar"
+                                                    src={
+                                                        account.ensAvatar ||
+                                                        blockie
+                                                    }
+                                                    className={styles.avatar}
+                                                />
+                                            )}
+                                            <Typography>
                                                 {account.ensName ||
                                                     account.displayName}
                                             </Typography>

@@ -100,3 +100,6 @@ export const CHAIN_DATA: Record<number, ChainData> = {
 export const metromApiClient = new MetromApiClient(
     SERVICE_URLS[ENVIRONMENT].metrom,
 );
+
+// taken from https://github.com/wevm/wagmi/blob/80326815bea2f175623157f57465f9dfae1f4c5c/packages/connectors/src/safe.ts#L45
+export const SAFE_CONNECTOR_ID = "safe";

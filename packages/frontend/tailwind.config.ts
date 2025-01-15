@@ -11,6 +11,9 @@ const config: Config = {
     presets: [tailwindPreset],
     theme: {
         extend: {
+            colors: {
+                "safe-brand": "#12ff80",
+            },
             transitionProperty: {
                 colors: "border-radius, color, background-color, border-color, text-decoration-color, fill, stroke",
             },

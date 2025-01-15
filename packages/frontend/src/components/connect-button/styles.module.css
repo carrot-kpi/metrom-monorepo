@@ -47,6 +47,10 @@
         ease-in-out;
 }
 
+.networkRowActive {
+    @apply bg-gray-200;
+}
+
 .networksWrapper {
     @apply flex flex-col;
 }
@@ -126,6 +130,14 @@
 
 .avatar {
     @apply w-7 h-7 rounded-md;
+}
+
+.safeAvatar {
+    @apply bg-safe-brand flex items-center justify-center;
+}
+
+.safeLogo {
+    @apply text-black w-4 h-4;
 }
 
 .icon {
