@@ -27,7 +27,11 @@
 }
 
 .body {
-    @apply bg-white w-full sm:h-[720px] mt-4 flex flex-col mb-7 rounded-xl overflow-hidden;
+    @apply w-full sm:h-[720px] mt-4 flex flex-col mb-7 rounded-xl overflow-hidden;
+}
+
+.body > :last-child > div {
+    @apply rounded-b-xl;
 }
 
 .empty {
