@@ -44,10 +44,6 @@ export interface Pool {
     fee: number | null;
 }
 
-export interface PoolWithTvl extends Pool {
-    usdTvl: number;
-}
-
 export interface Rewards extends Array<Reward> {
     amountUsdValue: number;
     remainingUsdValue: number;
@@ -88,7 +84,21 @@ export interface SpecificationWithKpiMeasurement extends Specification {
     kpi?: KpiSpecificationWithMeasurement;
 }
 
-export interface Campaign {
+export interface PoolWithTvl extends Pool {
+    usdTvl: number;
+}
+
+export interface LiquidityDebt {
+    brand: string;
+    usdDebt: number;
+}
+
+export enum CampaignType {
+    AmmPoolLiquidity = "amm-pool-liquidity",
+    LiquidityDebt = "liquidity-debt",
+}
+
+export interface CampaignBase {
     chainId: number;
     id: Address;
     from: number;
@@ -96,12 +106,21 @@ export interface Campaign {
     status: Status;
     createdAt: number;
     snapshottedAt: number | null;
-    pool: PoolWithTvl;
     rewards: Rewards;
     points: OnChainAmount | null;
     apr: number | null;
     specification: SpecificationWithKpiMeasurement | null;
 }
+
+export type Campaign =
+    | (CampaignBase & {
+          type: CampaignType.AmmPoolLiquidity;
+          target: PoolWithTvl;
+      })
+    | (CampaignBase & {
+          type: CampaignType.LiquidityDebt;
+          target: LiquidityDebt;
+      });
 
 export interface Claim extends Erc20TokenAmount {
     chainId: number;

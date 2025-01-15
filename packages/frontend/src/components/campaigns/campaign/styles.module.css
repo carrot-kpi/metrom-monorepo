@@ -5,7 +5,8 @@
         transition-colors
         duration-200
         ease-in-out
-        rounded-xl
+        rounded-none
+        bg-none
         min-h-[111px]
         sm:min-h-[72px]
         px-3
@@ -34,29 +35,6 @@
 
 .poolContainer {
     @apply flex sm:justify-start items-center gap-2 col-span-11 sm:col-span-1;
-}
-
-.externalLink {
-    @apply hidden
-        sm:flex
-        bg-white
-        h-7
-        w-7
-        items-center
-        justify-center
-        rounded-md
-        opacity-0
-        transform
-        scale-75
-        cursor-pointer
-        transition
-        duration-200
-        ease-in-out
-        pointer-events-none;
-}
-
-.externalLinkIcon {
-    @apply h-4 w-4 transform -rotate-45;
 }
 
 .root:hover .externalLink {

@@ -29,7 +29,7 @@ export function Campaign({ campaign }: CampaignProps) {
         <Link href={`/campaigns/${campaign.chainId}/${campaign.id}`}>
             <Card className={classNames(styles.root, styles.noMobile)}>
                 <Chain id={campaign.chainId} />
-                <Dex chain={campaign.chainId} slug={campaign.pool.dex} />
+                <Dex campaign={campaign} />
                 <div className={styles.poolContainer}>
                     <Pool campaign={campaign} />
                 </div>
@@ -58,7 +58,7 @@ export function Campaign({ campaign }: CampaignProps) {
             <Card className={styles.mobileCard}>
                 <div className={styles.topRow}>
                     <Chain id={campaign.chainId} />
-                    <Dex chain={campaign.chainId} slug={campaign.pool.dex} />
+                    <Dex campaign={campaign} />
                     <Pool campaign={campaign} />
                 </div>
                 <div className={styles.bottomRow}>

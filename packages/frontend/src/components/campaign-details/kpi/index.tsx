@@ -2,6 +2,7 @@ import { TextField, Typography } from "@metrom-xyz/ui";
 import { useTranslations } from "next-intl";
 import { formatPercentage, formatUsdAmount } from "@/src/utils/format";
 import {
+    CampaignType,
     KpiMetric,
     Status,
     type KpiSpecificationWithMeasurement,
@@ -48,7 +49,11 @@ export function Kpi({ campaign, loading }: KpiProps) {
         return { goal, measurement, minimumPayoutPercentage };
     }, [campaign]);
 
-    if (!campaign?.specification?.kpi) return null;
+    if (
+        !campaign?.specification?.kpi ||
+        campaign.type !== CampaignType.AmmPoolLiquidity
+    )
+        return null;
 
     const reachedGoalPercentage = measurement || 0;
 
@@ -59,7 +64,7 @@ export function Kpi({ campaign, loading }: KpiProps) {
                 ? undefined
                 : kpiMeasurements[kpiMeasurements.length - 1].value;
     } else {
-        poolUsdTvl = campaign.pool.usdTvl;
+        poolUsdTvl = campaign.target.usdTvl;
     }
 
     return (

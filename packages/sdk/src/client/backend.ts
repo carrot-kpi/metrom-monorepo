@@ -1,7 +1,6 @@
 import { formatUnits, type Address, type Hex } from "viem";
 import {
     type BackendActivity,
-    type BackendCampaign,
     type BackendClaim,
     type BackendPool,
     type BackendWhitelistedErc20Token,
@@ -9,6 +8,7 @@ import {
     type BackendKpiMeasurement,
     type BackendLeaderboard,
     type BackendRewardsCampaignLeaderboardRank,
+    type BackendCampaign,
 } from "./types";
 import type { SupportedChain } from "@metrom-xyz/contracts";
 import { SupportedDex } from "../commons";
@@ -451,7 +451,7 @@ function processCampaign(backendCampaign: BackendCampaign): Campaign {
         });
     }
 
-    const campaign: Campaign = {
+    const campaign = {
         ...backendCampaign,
         from,
         to,
@@ -460,15 +460,15 @@ function processCampaign(backendCampaign: BackendCampaign): Campaign {
             ? Number(backendCampaign.snapshottedAt)
             : null,
         status,
-        pool: {
+        target: {
             chainId: backendCampaign.chainId,
-            ...backendCampaign.pool,
+            ...backendCampaign.target,
         },
         rewards,
         points: backendCampaign.points
             ? stringToOnChainAmount(backendCampaign.points, 18)
             : null,
-    };
+    } as Campaign;
 
     return campaign;
 }
